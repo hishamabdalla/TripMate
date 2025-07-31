@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36301.6
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tripmate.API", "src\Tripmate.API\Tripmate.API.csproj", "{1442411A-005D-1139-4DFB-C41F616B663B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tripmate.Application", "src\Tripmate.Application\Tripmate.Application.csproj", "{B6F04323-7B89-2C13-5F91-ABB75EF8DB31}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tripmate.Domain", "src\Tripmate.Domain\Tripmate.Domain.csproj", "{7E79A1A8-E92E-C98B-E649-F0C54AB9743C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tripmate.Infrastructure", "src\Tripmate.Infrastructure\Tripmate.Infrastructure.csproj", "{19EEF7D2-FC1B-1AF8-1C51-E0875AD4491E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1442411A-005D-1139-4DFB-C41F616B663B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1442411A-005D-1139-4DFB-C41F616B663B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1442411A-005D-1139-4DFB-C41F616B663B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1442411A-005D-1139-4DFB-C41F616B663B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6F04323-7B89-2C13-5F91-ABB75EF8DB31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6F04323-7B89-2C13-5F91-ABB75EF8DB31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6F04323-7B89-2C13-5F91-ABB75EF8DB31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6F04323-7B89-2C13-5F91-ABB75EF8DB31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E79A1A8-E92E-C98B-E649-F0C54AB9743C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E79A1A8-E92E-C98B-E649-F0C54AB9743C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E79A1A8-E92E-C98B-E649-F0C54AB9743C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E79A1A8-E92E-C98B-E649-F0C54AB9743C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19EEF7D2-FC1B-1AF8-1C51-E0875AD4491E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19EEF7D2-FC1B-1AF8-1C51-E0875AD4491E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19EEF7D2-FC1B-1AF8-1C51-E0875AD4491E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19EEF7D2-FC1B-1AF8-1C51-E0875AD4491E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1442411A-005D-1139-4DFB-C41F616B663B} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{B6F04323-7B89-2C13-5F91-ABB75EF8DB31} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{7E79A1A8-E92E-C98B-E649-F0C54AB9743C} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{19EEF7D2-FC1B-1AF8-1C51-E0875AD4491E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0ECCB568-8F28-419C-B75E-E033367E5A72}
+	EndGlobalSection
+EndGlobal
