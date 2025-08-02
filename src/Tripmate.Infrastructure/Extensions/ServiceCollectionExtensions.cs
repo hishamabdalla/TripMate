@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tripmate.Domain.Entities;
 using Tripmate.Infrastructure.Data.Context;
 
 namespace Tripmate.Infrastructure.Extensions
@@ -17,6 +19,9 @@ namespace Tripmate.Infrastructure.Extensions
 
             // Add DbContext services
             services.AddDbContextServices(configuration);
+
+            // Add Identity services
+            services.AddIdentityServices();
 
             return services;
         }
@@ -30,8 +35,13 @@ namespace Tripmate.Infrastructure.Extensions
             });
 
         }
-       
 
+        private static void AddIdentityServices(this IServiceCollection services)
+        {
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+               .AddEntityFrameworkStores<TripmateDbContext>()
+               .AddDefaultTokenProviders();
+        }
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using Tripmate.Infrastructure.Extensions;
+﻿using Tripmate.Application.Extension;
+using Tripmate.Infrastructure.Extensions;
 
 namespace Tripmate.API.Helper
 {
@@ -15,6 +16,8 @@ namespace Tripmate.API.Helper
 
             // Add Infrastructure services
             services.AddInfrastructureServices(configuration);
+            // Add Application services
+            services.AddApplicationServices(configuration);
             return services;
         }
 
