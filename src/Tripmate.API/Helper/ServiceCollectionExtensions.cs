@@ -1,8 +1,10 @@
-﻿namespace Tripmate.API.Helper
+﻿using Tripmate.Infrastructure.Extensions;
+
+namespace Tripmate.API.Helper
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddAllServices(this IServiceCollection services)
+        public static IServiceCollection AddAllServices(this IServiceCollection services,IConfiguration configuration)
         {
 
             services.AddControllers();
@@ -10,6 +12,9 @@
             services.AddSwaggerService();
             // Add CORS policy
             services.AddCorsPolicy();
+
+            // Add Infrastructure services
+            services.AddInfrastructureServices(configuration);
             return services;
         }
 
