@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Tripmate.Application.Services.Identity.Login.DTOs;
 using Tripmate.Application.Services.Identity.Register.DTOs;
+using Tripmate.Application.Services.Identity.VerifyEmail.DTOs;
 using Tripmate.Domain.Services.Interfaces.Identity;
 
 namespace Tripmate.API.Controllers
@@ -34,6 +35,16 @@ namespace Tripmate.API.Controllers
                 return BadRequest(response);
             }
             return Ok(response);
+        }
+        [HttpPost("VerifyEmail")]
+        public async Task<IActionResult> VerifyEmail(VerifyEmailDto verifyEmailDto)
+        {
+            var result = await _authService.VerifyEmail(verifyEmailDto);
+            if (result.Errors != null && result.Errors.Any())
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
 
 
