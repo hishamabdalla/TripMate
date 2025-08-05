@@ -17,5 +17,6 @@ namespace Tripmate.Infrastructure.Data.Context
             base.OnModelCreating(modelBuilder);
         }
 
+
     }
 }

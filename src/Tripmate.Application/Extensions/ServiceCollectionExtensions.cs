@@ -6,6 +6,7 @@ using Tripmate.Application.Services.Identity;
 using Tripmate.Application.Services.Identity.Login;
 using Tripmate.Application.Services.Identity.Register;
 using Tripmate.Application.Services.Identity.Token;
+using Tripmate.Application.Services.Identity.VerifyEmail;
 using Tripmate.Domain.AppSettings;
 using Tripmate.Domain.Entities;
 using Tripmate.Domain.Services.Interfaces.Identity;
@@ -31,13 +32,13 @@ namespace Tripmate.Application.Extension
             services.AddScoped<ILoginHandler, LoginHandler>();
             services.AddScoped<IRegisterHandler, RegisterHandler>();
             services.AddScoped<IAuthService, AuthService>();
-
+            services.AddScoped<IEmailHandler, EmailHandler>();
+            services.AddMemoryCache();
             return services;
         }
         private static void OptionsSetup(this IServiceCollection services,IConfiguration configuration)
         {
             // Configure your application settings here
-
             services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
         }
 

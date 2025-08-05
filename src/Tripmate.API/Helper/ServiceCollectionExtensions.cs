@@ -10,10 +10,9 @@ namespace Tripmate.API.Helper
 
             services.AddControllers();
             // Add Swagger service
-            services.AddSwaggerService();
+            services.AddSwaggerService(); 
             // Add CORS policy
             services.AddCorsPolicy();
-
             // Add Infrastructure services
             services.AddInfrastructureServices(configuration);
             // Add Application services

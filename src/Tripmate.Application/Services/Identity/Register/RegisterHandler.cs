@@ -31,13 +31,7 @@ namespace Tripmate.Application.Services.Identity.Register
             _tokenService=tokenService;
             _emailHandler=emailHandler;
         }
-        private string GenerateVerificationCode()
-        {
-            var randomNumber = new byte[4];
-            using var rng = RandomNumberGenerator.Create();
-            rng.GetBytes(randomNumber);
-            return Convert.ToHexString(randomNumber)[..6].ToUpper(); // 6-character code
-        }
+       
         public async Task<ApiResponse<string>> HandleRegisterAsync(RegisterDto registerDto)
         {
             var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
@@ -125,6 +119,14 @@ namespace Tripmate.Application.Services.Identity.Register
             var token = await _tokenService.GenerateTokenAsync(user);
             return new ApiResponse<string>(true, 200, "Registration completed successfully");
 
+        }
+
+        private string GenerateVerificationCode()
+        {
+            var randomNumber = new byte[4];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToHexString(randomNumber)[..6].ToUpper(); // 6-character code
         }
     }
 }

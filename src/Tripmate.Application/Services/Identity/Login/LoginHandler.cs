@@ -24,29 +24,19 @@ namespace Tripmate.Application.Services.Identity.Login
         public async Task<ApiResponse<TokenResponse>> HandleLoginAsync(LoginDto loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
-
             if (user == null)
             {
-                return new ApiResponse<TokenResponse>(false, 404, "Invalid credentials", 
-                    errors: new List<string>() { "Email or password is incorrect" });
-                    
+                return new ApiResponse<TokenResponse>(false, 404, "User not found",
+                    errors: new List<string>() { "Invalid email or password" });
             }
-
             var isPasswordValid = await _userManager.CheckPasswordAsync(user, loginDto.Password);
             if (!isPasswordValid)
             {
-                return new ApiResponse<TokenResponse>(false, 404, "Invalid credentials", 
-                    errors: new List<string>() { "Email or password is incorrect" });
+                return new ApiResponse<TokenResponse>(false, 400, "Invalid credentials",
+                    errors: new List<string>() { "Invalid email or password" });
             }
-
-            // Generate token logic here
-
             var tokenResponse = await tokenService.GenerateTokenAsync(user);
-            
-            return new ApiResponse<TokenResponse>(true, 200, "Login successful", 
-                data: tokenResponse);
-
-
+            return new ApiResponse<TokenResponse>(tokenResponse);
         }
     }
 }

@@ -22,6 +22,7 @@ namespace Tripmate.Infrastructure.Extensions
 
             // Add Identity services
             services.AddIdentityServices();
+            
 
             return services;
         }
@@ -42,6 +43,8 @@ namespace Tripmate.Infrastructure.Extensions
                .AddEntityFrameworkStores<TripmateDbContext>()
                .AddDefaultTokenProviders();
         }
+
+        
 
     }
 }
