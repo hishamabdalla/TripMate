@@ -37,7 +37,7 @@ namespace Tripmate.Application.Services.Identity.Register
             var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
             if (existingUser != null)
             {
-                return new ApiResponse<string>(false, 400, "User already exists",
+                return new ApiResponse<string>(false, 400, "User already exists .",
                     errors: new List<string>() { "Email is already registered" });
             }
 
