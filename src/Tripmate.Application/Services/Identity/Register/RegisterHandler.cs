@@ -13,7 +13,7 @@ using Tripmate.Application.Services.Identity.Register.DTOs;
 using Tripmate.Application.Services.Identity.VerifyEmail;
 using Tripmate.Application.Services.Identity.VerifyEmail.DTOs;
 using Tripmate.Domain.Common.Response;
-using Tripmate.Domain.Entities;
+using Tripmate.Domain.Entities.Models;
 
 namespace Tripmate.Application.Services.Identity.Register
 {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Tripmate.Application.Services.Abstractions.Identity;
 using Tripmate.Application.Services.Identity.Login.DTOs;
 using Tripmate.Domain.Common.Response;
-using Tripmate.Domain.Entities;
+using Tripmate.Domain.Entities.Models;
 
 namespace Tripmate.Application.Services.Identity.Login
 {

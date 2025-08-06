@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Tripmate.Application.Services.Abstractions.Identity;
 using Tripmate.Domain.AppSettings;
 using Tripmate.Domain.Common.Response;
-using Tripmate.Domain.Entities;
+using Tripmate.Domain.Entities.Models;
 
 namespace Tripmate.Application.Services.Identity.Token
 {

@@ -5,15 +5,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tripmate.Domain.Entities
+namespace Tripmate.Domain.Entities.Models
 {
     public class ApplicationUser:IdentityUser
     {
         public string Country { get; set; }
         public bool IsActive { get; set; } = false;
+        public bool IsDeleted { get; set; }
         public bool IsEmailVerified { get; set; } = false;
         public string VerificationCode { get; set; }
         public DateTime? VerificationCodeExpiration { get; set; }
+        public UserRole UserRole { get; set; } = UserRole.User;
+        public ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
 
+    }
+    public enum UserRole
+    {
+        Admin = 1,
+        User = 2
     }
 }

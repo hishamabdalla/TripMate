@@ -40,8 +40,10 @@ namespace Tripmate.Application.Extension
         {
             // Configure your application settings here
             services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+            
+
         }
 
-        
+
     }
 }

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Tripmate.Domain.Entities;
+using Tripmate.Domain.Entities.Models;
 using Tripmate.Infrastructure.Data.Context;
 
 namespace Tripmate.Infrastructure.Extensions
@@ -29,7 +29,7 @@ namespace Tripmate.Infrastructure.Extensions
 
         private static void AddDbContextServices(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            var connectionString = configuration.GetConnectionString("cs");
             services.AddDbContext<TripmateDbContext>(options =>
             {
                 options.UseSqlServer(connectionString);
