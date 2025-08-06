@@ -16,7 +16,7 @@ namespace Tripmate.API.Controllers
         {
             _authService = authService;
         }
-        [HttpPost("register")]
+        [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             var response = await _authService.RegisterAsync(registerDto);
