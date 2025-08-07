@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Tripmate.Domain.Entities.Base;
 using Tripmate.Domain.Interfaces.Repositories.Intefaces;
+using Tripmate.Domain.Specification;
 using Tripmate.Infrastructure.Data.Context;
+using Tripmate.Infrastructure.Specification;
 
 namespace Tripmate.Infrastructure.Repositories
 {
@@ -40,6 +42,22 @@ namespace Tripmate.Infrastructure.Repositories
             {
                 _dbSet.Remove(entity);
             }
+        }
+
+        // Specification methods
+        public async Task<IEnumerable<TEntity>> GetAllWithSpecAsync(ISpecification<TEntity, TKey> specification)
+        {
+            return await ApplySpecification(specification).ToListAsync();
+        }
+        public async Task<TEntity> GetByIdWithSpecAsync( ISpecification<TEntity, TKey> specification)
+        {
+           return await ApplySpecification(specification)
+                .FirstOrDefaultAsync();
+        }
+
+        private IQueryable<TEntity> ApplySpecification(ISpecification<TEntity,TKey> specification)
+        {
+            return SpecificationEvaluator<TEntity, TKey>.GetQuery(_dbSet.AsQueryable(), specification);
         }
 
     }
