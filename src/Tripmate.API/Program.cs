@@ -14,10 +14,7 @@ namespace Tripmate.API
 
             // Add All Services
             builder.Services.AddAllServices(builder.Configuration);
-           
-
             var app = builder.Build();
-
             // Configure Middleware
             app.ConfigureMiddlewareServices();
 

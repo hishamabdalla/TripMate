@@ -39,7 +39,10 @@ namespace Tripmate.Infrastructure.Extensions
 
         private static void AddIdentityServices(this IServiceCollection services)
         {
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(options=>
+            {
+                options.Tokens.PasswordResetTokenProvider=TokenOptions.DefaultEmailProvider;
+            })
                .AddEntityFrameworkStores<TripmateDbContext>()
                .AddDefaultTokenProviders();
         }

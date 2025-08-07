@@ -11,6 +11,8 @@ namespace Tripmate.Application.Services.Identity.VerifyEmail
 {
     public interface IEmailHandler
     {
-        public Task SendVerificationEmail(string email, string verificationCode);
+         Task SendVerificationEmail(string email, string verificationCode);
+         Task SendResetCodeEmail(string email, string code);
+        
     }
 }

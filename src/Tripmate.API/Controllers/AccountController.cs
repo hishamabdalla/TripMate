@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Tripmate.Application.Services.Identity.ForgotPassword.DTO;
 using Tripmate.Application.Services.Identity.Login.DTOs;
 using Tripmate.Application.Services.Identity.Register.DTOs;
+using Tripmate.Application.Services.Identity.ResetPassword.DTO;
 using Tripmate.Application.Services.Identity.VerifyEmail.DTOs;
 using Tripmate.Domain.Services.Interfaces.Identity;
 
@@ -46,7 +48,25 @@ namespace Tripmate.API.Controllers
             }
             return Ok(result);
         }
-
-
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        {
+            var result = await _authService.ForgotPasswordAsync(forgotPasswordDto);
+            if (result.Errors!=null&&result.Errors.Any())
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            var result = await _authService.ResetPasswordAsync(resetPasswordDto);
+            if (result.Errors!=null&&result.Errors.Any())
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
     }
 }
