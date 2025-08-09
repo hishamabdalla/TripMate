@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tripmate.Domain.Entities.Base;
+using Tripmate.Domain.Entities.Models;
 using Tripmate.Domain.Interfaces.Repositories.Intefaces;
 using Tripmate.Domain.Specification;
 using Tripmate.Infrastructure.Data.Context;
@@ -23,7 +24,12 @@ namespace Tripmate.Infrastructure.Repositories
         }
         public async Task AddAsync(TEntity entity) => await _dbSet.AddAsync(entity);
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync()=> await _dbSet.ToListAsync();
+        public async Task<IEnumerable<TEntity>> GetAllAsync()
+        {
+           
+
+            return await _dbSet.ToListAsync();
+        }
 
         public async Task<TEntity> GetByIdAsync(TKey id)=> await _dbSet.FindAsync(id);
 

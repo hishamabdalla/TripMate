@@ -17,6 +17,7 @@ namespace Tripmate.Domain.Entities.Models
         public DateTime? VerificationCodeExpiration { get; set; }
         public UserRole UserRole { get; set; } = UserRole.User;
         public ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
+        public List<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
     }
     public enum UserRole

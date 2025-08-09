@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tripmate.Domain.AppSettings;
 using Tripmate.Domain.Entities.Models;
 using Tripmate.Infrastructure.Data.Context;
 
@@ -22,7 +25,12 @@ namespace Tripmate.Infrastructure.Extensions
 
             // Add Identity services
             services.AddIdentityServices();
-            
+
+            // Add Authentication services
+            services.AddAuthenticationServices(configuration);
+
+            // Add Authorization services
+            services.AddAuthorizationServices();
 
             return services;
         }
@@ -44,7 +52,40 @@ namespace Tripmate.Infrastructure.Extensions
                .AddDefaultTokenProviders();
         }
 
-        
+        private static void AddAuthenticationServices(this IServiceCollection services , IConfiguration configuration)
+        {
+            
+            // Configure JWT authentication
+            var jwtSection = configuration.GetSection("JwtSettings");
+            services.Configure<JwtSettings>(jwtSection);
+
+            var jwtSettings = jwtSection.Get<JwtSettings>();
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
+                    ClockSkew = TimeSpan.Zero // Optional: Set clock skew to zero for immediate expiration
+                };
+            });
+        }
+
+        private static void AddAuthorizationServices(this IServiceCollection services)
+        {
+            
+        }
 
     }
 }

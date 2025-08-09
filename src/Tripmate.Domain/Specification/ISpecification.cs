@@ -18,7 +18,7 @@ namespace Tripmate.Domain.Specification
         /// <summary>
         /// Gets the include properties for the specification.
         /// </summary>
-        IEnumerable<Expression<Func<TEntity, object>>> Includes { get; }
+        List<Expression<Func<TEntity, object>>> Includes { get; }
 
         /// <summary>
         /// Gets the order by expression for the specification.
@@ -29,6 +29,7 @@ namespace Tripmate.Domain.Specification
         /// Gets the order by descending expression for the specification.
         /// </summary>
         Expression<Func<TEntity, object>> OrderByDescending { get; set; }
+
 
     }
 }
