@@ -3,9 +3,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Tripmate.Application.Services.Abstractions.Identity;
 using Tripmate.Application.Services.Identity;
+using Tripmate.Application.Services.Identity.ForgotPassword;
 using Tripmate.Application.Services.Identity.Login;
 using Tripmate.Application.Services.Identity.RefreshTokens;
 using Tripmate.Application.Services.Identity.Register;
+using Tripmate.Application.Services.Identity.ResetPassword;
 using Tripmate.Application.Services.Identity.Token;
 using Tripmate.Application.Services.Identity.VerifyEmail;
 using Tripmate.Domain.AppSettings;
@@ -36,6 +38,8 @@ namespace Tripmate.Application.Extension
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IRefreshTokenHandler,RefreshTokenHandler>();
             services.AddScoped<IEmailHandler, EmailHandler>();
+            services.AddScoped<IForgetPasswordHandler, ForgetPasswordHandler>();
+            services.AddScoped<IResetPasswordHandler, ResetPasswordHandler>();
             services.AddMemoryCache();
             return services;
         }

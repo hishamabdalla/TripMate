@@ -125,7 +125,8 @@ namespace Tripmate.Application.Services.Identity.Register
             var randomNumber = new byte[4];
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
-            return Convert.ToHexString(randomNumber)[..6].ToUpper(); // 6-character code
+            return Convert.ToHexString(randomNumber)[..6].ToUpper();
         }
+        
     }
 }
