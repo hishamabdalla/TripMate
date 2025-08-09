@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Tripmate.Application.Services.Identity.Login.DTOs;
+using Tripmate.Application.Services.Identity.RefreshTokens.DTOs;
 using Tripmate.Application.Services.Identity.Register.DTOs;
 using Tripmate.Application.Services.Identity.VerifyEmail.DTOs;
 using Tripmate.Domain.Services.Interfaces.Identity;
@@ -34,6 +35,14 @@ namespace Tripmate.API.Controllers
             {
                 return BadRequest(response);
             }
+            
+            if(!string.IsNullOrEmpty(response.Data.RefreshToken))
+            {
+                SetRefreshTokenInCookie(response.Data.RefreshToken, response.Data.RefreshTokenExpiration);
+
+            }
+
+
             return Ok(response);
         }
         [HttpPost("VerifyEmail")]
@@ -47,6 +56,35 @@ namespace Tripmate.API.Controllers
             return Ok(result);
         }
 
+       
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDto refreshToken)
+        {
+            var response = await _authService.RefreshTokenAsync(refreshToken);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            // Set the new refresh token in the cookie
+            if (!string.IsNullOrEmpty(response.Data.RefreshToken))
+            {
+                SetRefreshTokenInCookie(response.Data.RefreshToken, response.Data.RefreshTokenExpiration);
+            }
+            return Ok(response);
+        }
+        private void SetRefreshTokenInCookie(string refreshToken, DateTime expires)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true, // Set to true if using HTTPS
+                Expires = expires.ToLocalTime()
+            };
+
+            Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
+
+        }
 
     }
 }

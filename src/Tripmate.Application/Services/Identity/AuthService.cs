@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Tripmate.Application.Services.Identity.Login;
 using Tripmate.Application.Services.Identity.Login.DTOs;
+using Tripmate.Application.Services.Identity.RefreshTokens;
+using Tripmate.Application.Services.Identity.RefreshTokens.DTOs;
 using Tripmate.Application.Services.Identity.Register;
 using Tripmate.Application.Services.Identity.Register.DTOs;
 using Tripmate.Application.Services.Identity.VerifyEmail;
@@ -18,15 +20,22 @@ namespace Tripmate.Application.Services.Identity
     {
         private readonly ILoginHandler _loginHandler;
         private readonly IRegisterHandler _registerHandler;
-        public AuthService(ILoginHandler loginHandler, IRegisterHandler registerHandler)
+        private readonly IRefreshTokenHandler _refreshTokenHandler;
+        public AuthService(ILoginHandler loginHandler, IRegisterHandler registerHandler,IRefreshTokenHandler refreshTokenHandler)
         {
             _registerHandler = registerHandler;
             _loginHandler = loginHandler;
+            _refreshTokenHandler = refreshTokenHandler;
+
+
         }
         public async Task<ApiResponse<TokenResponse>> LoginAsync(LoginDto loginDto)
         {
             return await _loginHandler.HandleLoginAsync(loginDto);
         }
+
+      
+
         public async Task<ApiResponse<string>> RegisterAsync(RegisterDto registerDto)
         {
             return await _registerHandler.HandleRegisterAsync(registerDto);
@@ -34,6 +43,12 @@ namespace Tripmate.Application.Services.Identity
         public async Task<ApiResponse<string>> VerifyEmail(VerifyEmailDto verifyEmailDto)
         {
             return await _registerHandler.VerifyEmail(verifyEmailDto);
+        }
+
+        public async Task<ApiResponse<TokenResponse>> RefreshTokenAsync(RefreshTokenDto refreshToken)
+        {
+            return await _refreshTokenHandler.HandleRefreshTokenAsync(refreshToken);
+
         }
     }
 }
