@@ -5,6 +5,7 @@ using Tripmate.Application.Services.Abstractions.Identity;
 using Tripmate.Application.Services.Identity;
 using Tripmate.Application.Services.Identity.ForgotPassword;
 using Tripmate.Application.Services.Identity.Login;
+using Tripmate.Application.Services.Identity.RefreshTokens;
 using Tripmate.Application.Services.Identity.Register;
 using Tripmate.Application.Services.Identity.ResetPassword;
 using Tripmate.Application.Services.Identity.Token;
@@ -31,9 +32,11 @@ namespace Tripmate.Application.Extension
         public static IServiceCollection RegisterApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IRefreshTokenHandler, RefreshTokenHandler>();
             services.AddScoped<ILoginHandler, LoginHandler>();
             services.AddScoped<IRegisterHandler, RegisterHandler>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IRefreshTokenHandler,RefreshTokenHandler>();
             services.AddScoped<IEmailHandler, EmailHandler>();
             services.AddScoped<IForgetPasswordHandler, ForgetPasswordHandler>();
             services.AddScoped<IResetPasswordHandler, ResetPasswordHandler>();

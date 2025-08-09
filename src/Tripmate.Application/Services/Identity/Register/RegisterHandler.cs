@@ -105,7 +105,6 @@ namespace Tripmate.Application.Services.Identity.Register
                 Country=pendingUser.Country,
                 EmailConfirmed = true,
                 IsActive=true,
-                IsEmailVerified = true,
             };
             var result = await _userManager.CreateAsync(user, pendingUser.Password);
 

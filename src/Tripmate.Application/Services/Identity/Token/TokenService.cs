@@ -12,6 +12,7 @@ using Tripmate.Application.Services.Abstractions.Identity;
 using Tripmate.Domain.AppSettings;
 using Tripmate.Domain.Common.Response;
 using Tripmate.Domain.Entities.Models;
+using System.Security.Cryptography;
 
 namespace Tripmate.Application.Services.Identity.Token
 {
@@ -46,7 +47,7 @@ namespace Tripmate.Application.Services.Identity.Token
             var token = new JwtSecurityToken(
                 issuer: JwtSettings.Issuer,
                 audience: JwtSettings.Audience,
-                expires: DateTime.UtcNow.AddHours(JwtSettings.ExpirationHours),
+                expires: DateTime.UtcNow.AddMinutes(JwtSettings.ExpirationHours),
                 claims: claims,
                 signingCredentials:new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
 
@@ -58,15 +59,26 @@ namespace Tripmate.Application.Services.Identity.Token
                 AccessToken = tokenString,
                 ExpiresIn=token.ValidTo,
                 TokenType = "Bearer",
-                RefreshToken= Guid.NewGuid().ToString() 
-
             };
 
+        }
 
+        public RefreshToken GenerateRefreshToken()
+        {
+            // Generate a random string for the refresh token
+            var randomNumber = new byte[32];
+            using var generator = new RNGCryptoServiceProvider();
+            generator.GetBytes(randomNumber);
+
+            return new RefreshToken
+            {
+                Token = Convert.ToBase64String(randomNumber),
+                Expiration = DateTime.UtcNow.AddDays(7) // Set expiration for 7 days
+            };
 
 
         }
 
-      
+
     }
 }

@@ -12,11 +12,11 @@ namespace Tripmate.Domain.Entities.Models
         public string Country { get; set; }
         public bool IsActive { get; set; } = false;
         public bool IsDeleted { get; set; }
-        public bool IsEmailVerified { get; set; } = false;
         public string VerificationCode { get; set; }
         public DateTime? VerificationCodeExpiration { get; set; }
         public UserRole UserRole { get; set; } = UserRole.User;
         public ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
+        public List<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
     }
     public enum UserRole
