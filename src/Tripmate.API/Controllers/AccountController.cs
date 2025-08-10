@@ -26,6 +26,7 @@ namespace Tripmate.API.Controllers
             if (!response.Success)
             {
                 return BadRequest(response);
+
             }
             return Ok(response);
         }

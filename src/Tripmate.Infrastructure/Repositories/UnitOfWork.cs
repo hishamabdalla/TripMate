@@ -8,9 +8,8 @@ using Tripmate.Domain.Entities.Base;
 using Tripmate.Domain.Interfaces;
 using Tripmate.Domain.Interfaces.Repositories.Intefaces;
 using Tripmate.Infrastructure.Data.Context;
-using Tripmate.Infrastructure.Repositories;
 
-namespace Tripmate.Infrastructure.UnitOfWork
+namespace Tripmate.Infrastructure.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
