@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Tripmate.API.Middlewares;
 using Tripmate.Infrastructure.Data.Context;
 
 namespace Tripmate.API.Helper
@@ -14,7 +15,10 @@ namespace Tripmate.API.Helper
            
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            
+
+            // Custom exception middleware
+            app.UseMiddleware<ExceptionMiddleware>();
+
             app.UseHttpsRedirection(); 
             app.UseAuthentication();
             app.UseAuthorization();
