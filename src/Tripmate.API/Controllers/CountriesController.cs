@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Tripmate.Application.Services.Abstractions.Country;
 
 namespace Tripmate.API.Controllers
 {
@@ -8,13 +9,24 @@ namespace Tripmate.API.Controllers
     [ApiController]
     public class CountriesController : ControllerBase
     {
-        [Authorize]
-        [HttpGet]
-        public IActionResult GetAllCountries()
+        private readonly ICountryService _countryService;
+
+        public CountriesController(ICountryService countryService)
         {
-            // Logic to retrieve all countries would go here
-            return Ok("List of countries would be returned here.");
+            _countryService = countryService;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllCountries()
+        {
+            var response = await _countryService.GetAllCountriesAsync();
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
 
     }
 }

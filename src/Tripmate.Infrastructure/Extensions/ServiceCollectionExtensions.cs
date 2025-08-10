@@ -11,7 +11,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Tripmate.Domain.AppSettings;
 using Tripmate.Domain.Entities.Models;
+using Tripmate.Domain.Interfaces;
 using Tripmate.Infrastructure.Data.Context;
+using Tripmate.Infrastructure.Repositories;
+
 
 namespace Tripmate.Infrastructure.Extensions
 {
@@ -22,6 +25,9 @@ namespace Tripmate.Infrastructure.Extensions
 
             // Add DbContext services
             services.AddDbContextServices(configuration);
+
+            //register IUnitOfWork
+            services.AddScoped<IUnitOfWork,UnitOfWork>();
 
             // Add Identity services
             services.AddIdentityServices();

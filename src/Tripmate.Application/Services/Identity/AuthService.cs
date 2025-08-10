@@ -25,11 +25,11 @@ namespace Tripmate.Application.Services.Identity
         private readonly ILoginHandler _loginHandler;
         private readonly IRegisterHandler _registerHandler;
         private readonly IRefreshTokenHandler _refreshTokenHandler;
-        public AuthService(ILoginHandler loginHandler, IRegisterHandler registerHandler,IRefreshTokenHandler refreshTokenHandler)
         private readonly IResetPasswordHandler _resetPassword;
         private readonly IForgetPasswordHandler _forgetPassword;
 
-        public AuthService(ILoginHandler loginHandler, IRegisterHandler registerHandler, IResetPasswordHandler resetPassword, IForgetPasswordHandler forgetPassword)
+        public AuthService(ILoginHandler loginHandler, IRegisterHandler registerHandler, IResetPasswordHandler resetPassword, IForgetPasswordHandler forgetPassword,
+            IRefreshTokenHandler refreshTokenHandler)
         {
             _registerHandler = registerHandler;
             _resetPassword=resetPassword;
@@ -40,15 +40,11 @@ namespace Tripmate.Application.Services.Identity
 
         }
 
-        
 
         public async Task<ApiResponse<TokenResponse>> LoginAsync(LoginDto loginDto)
         {
             return await _loginHandler.HandleLoginAsync(loginDto);
         }
-
-      
-
         public async Task<ApiResponse<string>> RegisterAsync(RegisterDto registerDto)
         {
             return await _registerHandler.HandleRegisterAsync(registerDto);
