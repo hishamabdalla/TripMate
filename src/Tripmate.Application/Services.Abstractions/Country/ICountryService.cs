@@ -13,8 +13,8 @@ namespace Tripmate.Application.Services.Abstractions.Country
         Task<ApiResponse<IEnumerable<CountryDto>>> GetAllCountriesAsync();
         Task<ApiResponse<CountryDto>> GetCountryByIdAsync(int id);
         Task<ApiResponse<CountryDto>> AddAsync(SetCountryDto setCountryDto);
-        Task<ApiResponse<CountryDto>> UpdateAsync(int id, CountryDto countryDto);
-        Task<ApiResponse<CountryDto>> DeleteAsync(int id);
+        Task<ApiResponse<CountryDto>> Update(int id, SetCountryDto countryDto);
+        Task<ApiResponse<CountryDto>> Delete(int id);
 
 
     }
