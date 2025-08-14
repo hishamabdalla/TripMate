@@ -27,15 +27,29 @@ namespace Tripmate.Application.Services.Countries
             _logger = logger;
         }
 
-        public Task<ApiResponse<CountryDto>> AddAsync(SetCountryDto setCountryDto)
+        public async Task<ApiResponse<CountryDto>> AddAsync(SetCountryDto setCountryDto)
         {
-            throw new NotImplementedException();
+
+            if (setCountryDto == null)
+            {
+                _logger.LogError("Attempted to add a null country.");
+                throw new BadRequestException("Country data cannot be null.");
+            }
+            var country = _mapper.Map<Country>(setCountryDto);
+            await _unitOfWork.Repository<Country, int>().AddAsync(country);
+            await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation("Country with ID {Id} added successfully.", country.Id);
+            var countryDto = _mapper.Map<CountryDto>(country);
+            return new ApiResponse<CountryDto>(countryDto)
+            {
+                Message = "Country added successfully.",
+                StatusCode = 201 // Created
+            };
+
         }
 
-        public Task<ApiResponse<CountryDto>> DeleteAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
+
+       
 
         public async Task<ApiResponse<IEnumerable<CountryDto>>> GetAllCountriesAsync()
 
@@ -56,17 +70,81 @@ namespace Tripmate.Application.Services.Countries
 
         }
 
-        public Task<ApiResponse<CountryDto>> GetCountryByIdAsync(int id)
+        public async Task<ApiResponse<CountryDto>> GetCountryByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var country = await _unitOfWork.Repository<Country, int>().GetByIdWithSpecAsync(new CountrySpecification(id));
+            if(country == null)
+            {
+                _logger.LogWarning("Country with ID {Id} not found.", id);
+                throw new NotFoundException("Country", id.ToString());
+            }
+
+            var countryDto=_mapper.Map<CountryDto>(country);
+            _logger.LogInformation("Country with ID {Id} retrieved successfully.", id);
+
+            return new ApiResponse<CountryDto>(countryDto)
+            {
+                Message = "Country retrieved successfully.",
+                StatusCode = 200
+            };
+
         }
 
-        public Task<ApiResponse<CountryDto>> UpdateAsync(int id, CountryDto countryDto)
+        public async Task<ApiResponse<CountryDto>> Update(int id, SetCountryDto countryDto)
         {
-            throw new NotImplementedException();
+            if (countryDto == null)
+            {
+                _logger.LogError("Attempted to update a null country.");
+                throw new BadRequestException("Country data cannot be null.");
+            }
+            var existingCountry = await _unitOfWork.Repository<Country, int>().GetByIdAsync(id);
+            if (existingCountry == null)
+            {
+                _logger.LogWarning("Country with ID {Id} not found for update.", id);
+                throw new NotFoundException("Country", id.ToString());
+            }
+
+
+            // Map the updated properties from the DTO to the existing country entity
+            _mapper.Map(countryDto, existingCountry);
+            _unitOfWork.Repository<Country, int>().Update(existingCountry);
+
+
+            await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation("Country with ID {Id} updated successfully.", id);
+
+            return new ApiResponse<CountryDto>(_mapper.Map<CountryDto>(existingCountry))
+            {
+                Message = "Country updated successfully.",
+                StatusCode = 200 // OK
+            };
+
+
         }
 
-       
+        public async Task<ApiResponse<CountryDto>> Delete(int id)
+        {
+            var country = await _unitOfWork.Repository<Country, int>().GetByIdAsync(id);
+            if (country == null)
+            {
+                _logger.LogWarning("Country with ID {Id} not found for deletion.", id);
+                throw new NotFoundException("Country", id.ToString());
+
+            }
+
+            _unitOfWork.Repository<Country, int>().Delete(id);
+
+            await _unitOfWork.SaveChangesAsync();
+
+            _logger.LogInformation("Country with ID {Id} deleted successfully.", id);
+
+            return new ApiResponse<CountryDto>(null)
+            {
+                Message = "Country deleted successfully.",
+                StatusCode = 204 // No Content
+            };
+
+        }
 
 
     }

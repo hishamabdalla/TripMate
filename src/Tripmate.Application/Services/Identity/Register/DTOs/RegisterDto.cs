@@ -13,10 +13,11 @@ namespace Tripmate.Application.Services.Identity.Register.DTOs
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; } = string.Empty;
         [DataType(DataType.PhoneNumber)]
-        public string? PhoneNumber { get; set; } = null;
+        public string PhoneNumber { get; set; } = null;
         [DataType(DataType.Password)]
         [StringLength(30, MinimumLength = 5, ErrorMessage = "{0} must be between {2} and {1} characters ")]
-        public string Password { get; set; } = string.Empty;
+        
+         public string Password { get; set; } = string.Empty;
         [Compare("Password")]
         [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; }

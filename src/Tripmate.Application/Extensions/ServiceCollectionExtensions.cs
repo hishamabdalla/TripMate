@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -14,6 +15,7 @@ using Tripmate.Application.Services.Identity.ResetPassword;
 using Tripmate.Application.Services.Identity.Token;
 using Tripmate.Application.Services.Identity.VerifyEmail;
 using Tripmate.Domain.AppSettings;
+using Tripmate.Domain.Common.Response;
 using Tripmate.Domain.Services.Interfaces.Identity;
 
 
@@ -26,11 +28,14 @@ namespace Tripmate.Application.Extension
             // Register application services here
             services.RegisterApplicationServices(configuration);
 
+
             // Register options
             services.OptionsSetup(configuration);
 
             // Register AutoMapper
             services.AddAutoMapperServices();
+
+            services.AddValiadiationErrorHandlingServices();
 
             return services;
         }
@@ -63,7 +68,31 @@ namespace Tripmate.Application.Extension
             var applicationsAssembly = Assembly.GetExecutingAssembly();
             services.AddAutoMapper(applicationsAssembly);
         }
+        private static void AddValiadiationErrorHandlingServices(this IServiceCollection services)
+        {
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = actionContext =>
+                {
+                    var errors = actionContext.ModelState
+                        .Where(e => e.Value.Errors.Count > 0)
+                        .SelectMany(x => x.Value.Errors)
+                        .Select(x => x.ErrorMessage).ToList();
 
+                    var result = new ApiResponse<string>(
+                        success: false,
+                        statusCode: 400,
+                        message: "Validation errors",
+                        errors: errors
+                        );
+
+
+                    return new BadRequestObjectResult(result);
+                };
+            }
+            );
+
+
+        }
     }
-
 }

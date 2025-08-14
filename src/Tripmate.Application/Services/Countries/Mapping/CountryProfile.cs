@@ -16,7 +16,7 @@ namespace Tripmate.Application.Services.Countries.Mapping
             CreateMap<Country, CountryDto>()
                 .ReverseMap();
 
-            CreateMap<Country, SetCountryDto>();
+            CreateMap<SetCountryDto,Country>().ReverseMap();
 
 
         }

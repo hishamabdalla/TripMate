@@ -68,6 +68,8 @@ namespace Tripmate.Application.Services.Identity.Register
                 VerificationCode = GenerateVerificationCode(),
                 Expiration = DateTime.UtcNow.AddHours(24),
             };
+
+           
             try
             {
                 await _emailHandler.SendVerificationEmail(pendingUser.Email, pendingUser.VerificationCode);
@@ -76,7 +78,7 @@ namespace Tripmate.Application.Services.Identity.Register
                     .SetPriority(CacheItemPriority.Normal);
 
                 _cache.Set($"{PendingUsersCacheKey}{pendingUser.Email}", pendingUser, cacheOptions);
-                return new ApiResponse<string>(true, 200, "Verification email sent");
+                return new ApiResponse<string>(true, 200, "Verification email sent",data: pendingUser.Email);
             }
             catch (Exception ex)
             {

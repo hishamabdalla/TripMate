@@ -6,6 +6,7 @@ using Tripmate.Application.Services.Identity.RefreshTokens.DTOs;
 using Tripmate.Application.Services.Identity.Register.DTOs;
 using Tripmate.Application.Services.Identity.ResetPassword.DTO;
 using Tripmate.Application.Services.Identity.VerifyEmail.DTOs;
+using Tripmate.Domain.Common.Response;
 using Tripmate.Domain.Services.Interfaces.Identity;
 
 namespace Tripmate.API.Controllers
@@ -52,7 +53,7 @@ namespace Tripmate.API.Controllers
         public async Task<IActionResult> VerifyEmail(VerifyEmailDto verifyEmailDto)
         {
             var result = await _authService.VerifyEmail(verifyEmailDto);
-            if (result.Errors != null && result.Errors.Any())
+            if (!result.Success)
             {
                 return BadRequest(result);
             }
@@ -61,9 +62,18 @@ namespace Tripmate.API.Controllers
 
        
 
-        [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDto refreshToken)
+        [HttpGet("refresh-token")]
+        public async Task<IActionResult> RefreshToken()
         {
+
+            var refreshToken = Request.Cookies["refreshToken"];
+            
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                return BadRequest(new ApiResponse<TokenResponse>(false, 400, "Refresh token is missing"));
+            }
+
+
             var response = await _authService.RefreshTokenAsync(refreshToken);
             if (!response.Success)
             {
