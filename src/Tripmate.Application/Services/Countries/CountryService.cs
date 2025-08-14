@@ -105,10 +105,12 @@ namespace Tripmate.Application.Services.Countries
             }
 
 
-
+            // Map the updated properties from the DTO to the existing country entity
             _mapper.Map(countryDto, existingCountry);
-           
-            _unitOfWork.SaveChangesAsync();
+            _unitOfWork.Repository<Country, int>().Update(existingCountry);
+
+
+            await _unitOfWork.SaveChangesAsync();
             _logger.LogInformation("Country with ID {Id} updated successfully.", id);
 
             return new ApiResponse<CountryDto>(_mapper.Map<CountryDto>(existingCountry))

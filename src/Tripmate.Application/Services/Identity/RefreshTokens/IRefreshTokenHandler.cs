@@ -10,6 +10,6 @@ namespace Tripmate.Application.Services.Identity.RefreshTokens
 {
     public interface IRefreshTokenHandler
     {
-        Task<ApiResponse<TokenResponse>> HandleRefreshTokenAsync(RefreshTokenDto refreshTokenDto);
+        Task<ApiResponse<TokenResponse>> HandleRefreshTokenAsync(string refreshTokenDto);
     }
 }
