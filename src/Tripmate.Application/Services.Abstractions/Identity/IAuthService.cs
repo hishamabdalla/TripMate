@@ -18,7 +18,7 @@ namespace Tripmate.Domain.Services.Interfaces.Identity
        Task<ApiResponse<TokenResponse>> LoginAsync(LoginDto loginDto);
        Task<ApiResponse<string>> RegisterAsync(RegisterDto registerDto);
        Task<ApiResponse<string>> VerifyEmail(VerifyEmailDto verifyEmailDto);
-       Task<ApiResponse<TokenResponse>> RefreshTokenAsync(string refreshToken);
+       Task<ApiResponse<TokenResponse>> RefreshTokenAsync(RefreshTokenDto refreshToken);
        Task<ApiResponse<string>> ForgotPasswordAsync(ForgotPasswordDto forgotPasswordDto);
        Task<ApiResponse<string>> ResetPasswordAsync(ResetPasswordDto resetPasswordDto);
     }

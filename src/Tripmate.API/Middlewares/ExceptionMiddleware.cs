@@ -22,7 +22,13 @@ namespace Tripmate.API.Middlewares
             {
                 await HandleExceptionAsync(context, StatusCodes.Status404NotFound, notFoundException.Message);
             }
-            catch(BadRequestException badRequestException)
+            catch(ImageValidationException imageValidationException)
+            {
+                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, imageValidationException.Message);
+            }
+            
+
+            catch (BadRequestException badRequestException)
             {
                 await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, badRequestException.Message);
             }

@@ -23,12 +23,12 @@ namespace Tripmate.Application.Services.Identity.RefreshTokens
             _userManager = userManager;
         }
 
-        public async Task<ApiResponse<TokenResponse>> HandleRefreshTokenAsync(string refreshTokenDto)
+        public async Task<ApiResponse<TokenResponse>> HandleRefreshTokenAsync(RefreshTokenDto refreshTokenDto)
         {
 
             // Logic to validate the refresh token and generate a new access token
 
-            var user =await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == refreshTokenDto));
+            var user =await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == refreshTokenDto.RefreshToken));
 
             if (user ==null)
             {
@@ -37,7 +37,7 @@ namespace Tripmate.Application.Services.Identity.RefreshTokens
             }
 
             // Check if the refresh token is still valid
-            var refreshTokenEntity = user.RefreshTokens.Single(t => t.Token == refreshTokenDto);
+            var refreshTokenEntity = user.RefreshTokens.Single(t => t.Token == refreshTokenDto.RefreshToken);
             if (!refreshTokenEntity.IsActive)
             {
                 return new ApiResponse<TokenResponse>(false, 400, "Inactive refresh token",

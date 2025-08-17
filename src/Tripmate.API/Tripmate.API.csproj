@@ -20,4 +20,8 @@
     <ProjectReference Include="..\Tripmate.Infrastructure\Tripmate.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>
