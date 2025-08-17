@@ -1,4 +1,5 @@
 ﻿
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,9 +12,11 @@ using Tripmate.Application.Services.Identity.ForgotPassword;
 using Tripmate.Application.Services.Identity.Login;
 using Tripmate.Application.Services.Identity.RefreshTokens;
 using Tripmate.Application.Services.Identity.Register;
+using Tripmate.Application.Services.Identity.Register.DTOs;
 using Tripmate.Application.Services.Identity.ResetPassword;
 using Tripmate.Application.Services.Identity.Token;
 using Tripmate.Application.Services.Identity.VerifyEmail;
+using Tripmate.Application.Services.Image;
 using Tripmate.Domain.AppSettings;
 using Tripmate.Domain.Common.Response;
 using Tripmate.Domain.Services.Interfaces.Identity;
@@ -25,8 +28,12 @@ namespace Tripmate.Application.Extension
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddFluentValidation();
+            services.AddValiadiationErrorHandlingServices();
             // Register application services here
             services.RegisterApplicationServices(configuration);
+
+           services.AddScoped<IValidator<RegisterDto>, RegisterDtoValidator>();
 
 
             // Register options
@@ -34,9 +41,9 @@ namespace Tripmate.Application.Extension
 
             // Register AutoMapper
             services.AddAutoMapperServices();
+            
 
-            services.AddValiadiationErrorHandlingServices();
-
+            // Register FluentValidation
             return services;
         }
 
@@ -52,6 +59,8 @@ namespace Tripmate.Application.Extension
             services.AddScoped<IForgetPasswordHandler, ForgetPasswordHandler>();
             services.AddScoped<IResetPasswordHandler, ResetPasswordHandler>();
             services.AddScoped<ICountryService, CountryService>();
+            services.AddScoped<IFileService, FileService>();
+
             services.AddMemoryCache();
             return services;
         }
@@ -92,6 +101,14 @@ namespace Tripmate.Application.Extension
             }
             );
 
+
+        }
+
+        private static void AddFluentValidation(this IServiceCollection services)
+        { 
+            // Register FluentValidation services
+        
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
         }
     }

@@ -56,6 +56,13 @@ namespace Tripmate.Infrastructure.Extensions
             services.AddIdentity<ApplicationUser, IdentityRole>(options=>
             {
                 options.Tokens.PasswordResetTokenProvider=TokenOptions.DefaultEmailProvider;
+
+                options.Password.RequiredLength = 6;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireDigit = true;
+                options.Password.RequireNonAlphanumeric = false;
+
             })
                .AddEntityFrameworkStores<TripmateDbContext>()
                .AddDefaultTokenProviders();

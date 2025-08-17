@@ -40,7 +40,7 @@ namespace Tripmate.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCountry([FromBody] SetCountryDto setCountryDto)
+        public async Task<IActionResult> AddCountry([FromForm] SetCountryDto setCountryDto)
         {
 
             var response = await _countryService.AddAsync(setCountryDto);
@@ -52,7 +52,7 @@ namespace Tripmate.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCountry(int id, [FromBody] SetCountryDto countryDto)
+        public async Task<IActionResult> UpdateCountry(int id, [FromForm] SetCountryDto countryDto)
         {
             var response = await _countryService.Update(id, countryDto);
             if (!response.Success)

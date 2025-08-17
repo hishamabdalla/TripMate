@@ -62,7 +62,7 @@ namespace Tripmate.Application.Services.Identity
             return await _registerHandler.VerifyEmail(verifyEmailDto);
         }
 
-        public async Task<ApiResponse<TokenResponse>> RefreshTokenAsync(string refreshToken)
+        public async Task<ApiResponse<TokenResponse>> RefreshTokenAsync(RefreshTokenDto refreshToken)
         {
             return await _refreshTokenHandler.HandleRefreshTokenAsync(refreshToken);
 

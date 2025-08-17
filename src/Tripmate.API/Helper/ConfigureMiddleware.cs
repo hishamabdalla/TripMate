@@ -25,6 +25,8 @@ namespace Tripmate.API.Helper
             app.MapControllers();
             // Enable CORS
             app.UseCors("AllowAllOrigins");
+            app.UseStaticFiles();
+
 
         }
         private static void ApplyMigrations(this WebApplication app)

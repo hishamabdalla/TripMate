@@ -11,9 +11,11 @@ namespace Tripmate.Application.Services.Countries.Mapping
 {
     public class CountryProfile:Profile
     {
+
         public CountryProfile()
         {
             CreateMap<Country, CountryDto>()
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom<PictureUrlResolver>())
                 .ReverseMap();
 
             CreateMap<SetCountryDto,Country>().ReverseMap();

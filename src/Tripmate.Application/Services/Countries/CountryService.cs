@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tripmate.Application.Services.Abstractions.Country;
 using Tripmate.Application.Services.Countries.DTOs;
+using Tripmate.Application.Services.Image;
 using Tripmate.Domain.Common.Response;
 using Tripmate.Domain.Entities.Models;
 using Tripmate.Domain.Exceptions;
@@ -20,11 +21,13 @@ namespace Tripmate.Application.Services.Countries
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<CountryService> _logger;
-        public CountryService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<CountryService> logger)
+        private readonly IFileService _fileService;
+        public CountryService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<CountryService> logger, IFileService fileService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
+            _fileService = fileService;
         }
 
         public async Task<ApiResponse<CountryDto>> AddAsync(SetCountryDto setCountryDto)
@@ -35,7 +38,22 @@ namespace Tripmate.Application.Services.Countries
                 _logger.LogError("Attempted to add a null country.");
                 throw new BadRequestException("Country data cannot be null.");
             }
+
+
             var country = _mapper.Map<Country>(setCountryDto);
+           
+            
+            if (setCountryDto.ImageUrl == null)
+            {
+                _logger.LogError("ImageUrl is required for adding a country.");
+                throw new BadRequestException("ImageUrl is required.");
+
+            }
+            // Handle image upload
+            var imageUrl = await _fileService.UploadImageAsync(setCountryDto.ImageUrl, "countries");
+            country.ImageUrl = imageUrl;
+
+
             await _unitOfWork.Repository<Country, int>().AddAsync(country);
             await _unitOfWork.SaveChangesAsync();
             _logger.LogInformation("Country with ID {Id} added successfully.", country.Id);
@@ -97,6 +115,7 @@ namespace Tripmate.Application.Services.Countries
                 _logger.LogError("Attempted to update a null country.");
                 throw new BadRequestException("Country data cannot be null.");
             }
+
             var existingCountry = await _unitOfWork.Repository<Country, int>().GetByIdAsync(id);
             if (existingCountry == null)
             {
@@ -105,12 +124,30 @@ namespace Tripmate.Application.Services.Countries
             }
 
 
-            // Map the updated properties from the DTO to the existing country entity
-            _mapper.Map(countryDto, existingCountry);
+            if (countryDto.ImageUrl != null)
+            {
+                if (!string.IsNullOrEmpty(existingCountry.ImageUrl))
+                {
+                    _fileService.DeleteImage(existingCountry.ImageUrl, "countries");
+                }
+
+                var newImageUrl = await _fileService.UploadImageAsync(countryDto.ImageUrl, "countries");
+                existingCountry.ImageUrl = newImageUrl;
+            }
+            else
+            {
+                existingCountry.ImageUrl = existingCountry.ImageUrl;
+            }
+
+            // Map the other properties
+            existingCountry.Name = countryDto.Name;
+            existingCountry.Description = countryDto.Description;
+
+
+
             _unitOfWork.Repository<Country, int>().Update(existingCountry);
-
-
             await _unitOfWork.SaveChangesAsync();
+
             _logger.LogInformation("Country with ID {Id} updated successfully.", id);
 
             return new ApiResponse<CountryDto>(_mapper.Map<CountryDto>(existingCountry))
@@ -118,8 +155,6 @@ namespace Tripmate.Application.Services.Countries
                 Message = "Country updated successfully.",
                 StatusCode = 200 // OK
             };
-
-
         }
 
         public async Task<ApiResponse<CountryDto>> Delete(int id)
@@ -133,6 +168,11 @@ namespace Tripmate.Application.Services.Countries
             }
 
             _unitOfWork.Repository<Country, int>().Delete(id);
+            // Optionally, you can delete the image associated with the country
+            if (!string.IsNullOrEmpty(country.ImageUrl))
+            {
+                _fileService.DeleteImage(country.ImageUrl, "countries");
+            }
 
             await _unitOfWork.SaveChangesAsync();
 

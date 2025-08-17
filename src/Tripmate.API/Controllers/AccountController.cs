@@ -62,19 +62,19 @@ namespace Tripmate.API.Controllers
 
        
 
-        [HttpGet("refresh-token")]
-        public async Task<IActionResult> RefreshToken()
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken(RefreshTokenDto refreshTokenDto)
         {
 
-            var refreshToken = Request.Cookies["refreshToken"];
+            //var refreshToken = Request.Cookies["refreshToken"];
             
-            if (string.IsNullOrEmpty(refreshToken))
-            {
-                return BadRequest(new ApiResponse<TokenResponse>(false, 400, "Refresh token is missing"));
-            }
+            //if (string.IsNullOrEmpty(refreshToken))
+            //{
+            //    return BadRequest(new ApiResponse<TokenResponse>(false, 400, "Refresh token is missing"));
+            //}
 
 
-            var response = await _authService.RefreshTokenAsync(refreshToken);
+            var response = await _authService.RefreshTokenAsync(refreshTokenDto);
             if (!response.Success)
             {
                 return BadRequest(response);
@@ -91,6 +91,7 @@ namespace Tripmate.API.Controllers
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
+
                 Secure = true, // Set to true if using HTTPS
                 Expires = expires.ToLocalTime()
             };
