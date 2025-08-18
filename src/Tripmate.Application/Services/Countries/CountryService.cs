@@ -50,7 +50,7 @@ namespace Tripmate.Application.Services.Countries
 
             }
             // Handle image upload
-            var imageUrl = await _fileService.UploadImageAsync(setCountryDto.ImageUrl, "countries");
+            var imageUrl = await _fileService.UploadImageAsync(setCountryDto.ImageUrl, "Countries");
             country.ImageUrl = imageUrl;
 
 
@@ -128,10 +128,10 @@ namespace Tripmate.Application.Services.Countries
             {
                 if (!string.IsNullOrEmpty(existingCountry.ImageUrl))
                 {
-                    _fileService.DeleteImage(existingCountry.ImageUrl, "countries");
+                    _fileService.DeleteImage(existingCountry.ImageUrl, "Countries");
                 }
 
-                var newImageUrl = await _fileService.UploadImageAsync(countryDto.ImageUrl, "countries");
+                var newImageUrl = await _fileService.UploadImageAsync(countryDto.ImageUrl, "Countries");
                 existingCountry.ImageUrl = newImageUrl;
             }
             else
@@ -157,7 +157,7 @@ namespace Tripmate.Application.Services.Countries
             };
         }
 
-        public async Task<ApiResponse<CountryDto>> Delete(int id)
+        public async Task<ApiResponse<bool>> Delete(int id)
         {
             var country = await _unitOfWork.Repository<Country, int>().GetByIdAsync(id);
             if (country == null)
@@ -178,11 +178,12 @@ namespace Tripmate.Application.Services.Countries
 
             _logger.LogInformation("Country with ID {Id} deleted successfully.", id);
 
-            return new ApiResponse<CountryDto>(null)
+            return new ApiResponse<bool>(true)
             {
                 Message = "Country deleted successfully.",
-                StatusCode = 204 // No Content
+                StatusCode = 200 // OK
             };
+
 
         }
 
