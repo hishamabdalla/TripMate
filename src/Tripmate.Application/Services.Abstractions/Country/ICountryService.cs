@@ -14,7 +14,7 @@ namespace Tripmate.Application.Services.Abstractions.Country
         Task<ApiResponse<CountryDto>> GetCountryByIdAsync(int id);
         Task<ApiResponse<CountryDto>> AddAsync(SetCountryDto setCountryDto);
         Task<ApiResponse<CountryDto>> Update(int id, SetCountryDto countryDto);
-        Task<ApiResponse<CountryDto>> Delete(int id);
+        Task<ApiResponse<bool>> Delete(int id);
 
 
     }

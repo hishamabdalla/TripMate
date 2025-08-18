@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using Tripmate.Application.Services.Abstractions.Attraction;
 using Tripmate.Application.Services.Abstractions.Country;
 using Tripmate.Application.Services.Abstractions.Identity;
+using Tripmate.Application.Services.Attractions;
 using Tripmate.Application.Services.Countries;
 using Tripmate.Application.Services.Identity;
 using Tripmate.Application.Services.Identity.ForgotPassword;
@@ -60,6 +62,7 @@ namespace Tripmate.Application.Extension
             services.AddScoped<IResetPasswordHandler, ResetPasswordHandler>();
             services.AddScoped<ICountryService, CountryService>();
             services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IAttractionService, AttractionService>();
 
             services.AddMemoryCache();
             return services;
