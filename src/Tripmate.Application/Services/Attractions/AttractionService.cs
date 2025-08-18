@@ -165,9 +165,31 @@ namespace Tripmate.Application.Services.Attractions
 
         }
 
-        public Task<ApiResponse<bool>> Delete(int id)
+        public async Task<ApiResponse<bool>> Delete(int id)
         {
-            throw new NotImplementedException();
+            var attraction = await _unitOfWork.Repository<Attraction, int>().GetByIdAsync(id);
+            if (attraction == null)
+            {
+                _logger.LogWarning("Attraction with ID {Id} not found for deletion.", id);
+                throw new NotFoundException($"Attraction with ID {id} not found.");
+            }
+             _unitOfWork.Repository<Attraction, int>().Delete(id);
+
+            if (!string.IsNullOrEmpty(attraction.ImageUrl))
+            {
+                _fileService.DeleteImage(attraction.ImageUrl, "Attractions");
+            }
+
+
+                await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation("Attraction with ID {Id} deleted successfully.", id);
+            return new ApiResponse<bool>(true)
+            {
+                Success = true,
+                StatusCode = 200, // OK
+                Message = "Attraction deleted successfully."
+            };
+
         }
 
     }

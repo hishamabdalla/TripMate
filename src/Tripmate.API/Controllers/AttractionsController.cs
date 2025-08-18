@@ -43,13 +43,18 @@ namespace Tripmate.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAttraction(int id, [FromForm] SetAttractionDto setAttractionDto)
         {
-            
-            var result = await _attractionService.UpdateAsync(id,setAttractionDto);
+
+            var result = await _attractionService.UpdateAsync(id, setAttractionDto);
             return Ok(result);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAttraction(int id)
+        {
+            var result = await _attractionService.Delete(id);
 
+            return Ok(result);
 
-
+        }
     }
 }
