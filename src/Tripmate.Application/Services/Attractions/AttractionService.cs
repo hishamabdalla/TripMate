@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Tripmate.Application.Services.Abstractions.Attraction;
 using Tripmate.Application.Services.Attractions.DTOs;
+using Tripmate.Application.Services.Image;
 using Tripmate.Domain.Common.Response;
 using Tripmate.Domain.Entities.Models;
 using Tripmate.Domain.Exceptions;
@@ -15,11 +16,13 @@ namespace Tripmate.Application.Services.Attractions
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<AttractionService> _logger;
-        public AttractionService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<AttractionService> logger)
+        private readonly IFileService _fileService;
+        public AttractionService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<AttractionService> logger , IFileService fileService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
+            _fileService = fileService;
         }
 
         public async Task<ApiResponse<IEnumerable<AttractionDto>>>GetAllAttractionsAsync()
@@ -64,9 +67,36 @@ namespace Tripmate.Application.Services.Attractions
 
 
         }
-        public Task<ApiResponse<AttractionDto>> AddAsync(SetAttractionDto setAttractionDto)
+        public async Task<ApiResponse<AttractionDto>> AddAsync(SetAttractionDto setAttractionDto)
         {
-            throw new NotImplementedException();
+            if (setAttractionDto == null)
+            {
+                _logger.LogError("Attempted to add a null attraction.");
+                throw new BadRequestException("Attraction data cannot be null.");
+
+            }
+
+            var attraction = _mapper.Map<Attraction>(setAttractionDto);
+            if (setAttractionDto.ImageUrl == null)
+            {
+                _logger.LogError("ImageUrl is required for adding an attraction.");
+                throw new BadRequestException("ImageUrl is required.");
+            }
+            // Handle image upload
+
+            var imageUrl = await _fileService.UploadImageAsync(setAttractionDto.ImageUrl, "attractions");
+            attraction.ImageUrl = imageUrl;
+            await _unitOfWork.Repository<Attraction, int>().AddAsync(attraction);
+            await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation("Attraction with ID {Id} added successfully.", attraction.Id);
+
+            var attractionDto = _mapper.Map<AttractionDto>(attraction);
+            return new ApiResponse<AttractionDto>(attractionDto)
+            {
+                Success = true,
+                StatusCode = 201, // Created
+                Message = "Attraction added successfully."
+            };
 
         }
 
