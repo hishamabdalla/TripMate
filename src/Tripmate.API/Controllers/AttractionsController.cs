@@ -40,6 +40,14 @@ namespace Tripmate.API.Controllers
             return CreatedAtAction(nameof(GetAttractionById), new { id = result.Data.Id }, result);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAttraction(int id, [FromForm] SetAttractionDto setAttractionDto)
+        {
+            
+            var result = await _attractionService.UpdateAsync(id,setAttractionDto);
+            return Ok(result);
+        }
+
 
 
 

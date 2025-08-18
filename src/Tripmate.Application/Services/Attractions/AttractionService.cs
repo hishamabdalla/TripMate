@@ -84,10 +84,19 @@ namespace Tripmate.Application.Services.Attractions
             }
             // Handle image upload
 
-            var imageUrl = await _fileService.UploadImageAsync(setAttractionDto.ImageUrl, "attractions");
+            var imageUrl = await _fileService.UploadImageAsync(setAttractionDto.ImageUrl, "Attractions");
             attraction.ImageUrl = imageUrl;
+
+            var Region = await _unitOfWork.Repository<Region, int>().GetByIdAsync(setAttractionDto.RegionId);
+            if (Region == null)
+            {
+                _logger.LogError("Region with ID {RegionId} not found.", setAttractionDto.RegionId);
+                throw new NotFoundException($"Region with ID {setAttractionDto.RegionId} not found.");
+            }
+
             await _unitOfWork.Repository<Attraction, int>().AddAsync(attraction);
             await _unitOfWork.SaveChangesAsync();
+
             _logger.LogInformation("Attraction with ID {Id} added successfully.", attraction.Id);
 
             var attractionDto = _mapper.Map<AttractionDto>(attraction);
@@ -101,11 +110,61 @@ namespace Tripmate.Application.Services.Attractions
         }
 
 
-        public Task<ApiResponse<AttractionDto>> Update(int id, SetAttractionDto attractionDto)
+        public async Task<ApiResponse<AttractionDto>> UpdateAsync(int id, SetAttractionDto attractionDto)
         {
-            throw new NotImplementedException();
+            if (attractionDto == null)
+            {
+                _logger.LogError("Attempted to update a null attraction.");
+                throw new BadRequestException("Attraction data cannot be null.");
+            }
+            var existingAttraction = await _unitOfWork.Repository<Attraction, int>().GetByIdAsync(id);
+            if (existingAttraction == null)
+            {
+                _logger.LogWarning("Attraction with ID {Id} not found for update.", id);
+                throw new NotFoundException($"Attraction with ID {id} not found.");
+            }
+
+           
+            if (attractionDto.ImageUrl != null && attractionDto.ImageUrl?.Length > 0)
+            {
+               if (!string.IsNullOrEmpty(existingAttraction.ImageUrl))
+                {
+                    // Delete the old image if it exists
+                     _fileService.DeleteImage(existingAttraction.ImageUrl,"Attractions");
+                }
+                // Handle image upload
+                var imageUrl = await _fileService.UploadImageAsync(attractionDto.ImageUrl, "Attractions");
+
+                existingAttraction.ImageUrl = imageUrl;
+
+            }
+
+            var region = await _unitOfWork.Repository<Region, int>().GetByIdAsync(attractionDto.RegionId);
+            if (region == null)
+            {
+                _logger.LogError("Region with ID {RegionId} not found.", attractionDto.RegionId);
+                throw new NotFoundException($"Region with ID {attractionDto.RegionId} not found.");
+            }
+
+            _mapper.Map(attractionDto, existingAttraction);
+            
+
+
+
+            await _unitOfWork.SaveChangesAsync();
+
+            _logger.LogInformation("Attraction with ID {Id} updated successfully.", id);
+
+            var attractionResponse = _mapper.Map<AttractionDto>(existingAttraction);
+            return new ApiResponse<AttractionDto>(attractionResponse)
+            {
+                Success = true,
+                StatusCode = 200, // OK
+                Message = "Attraction updated successfully."
+            };
 
         }
+
         public Task<ApiResponse<bool>> Delete(int id)
         {
             throw new NotImplementedException();

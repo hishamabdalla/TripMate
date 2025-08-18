@@ -15,10 +15,14 @@ namespace Tripmate.Application.Services.Attractions.Mapping
         public AttractionProfile()
         {
             CreateMap<Attraction, AttractionDto>()
-                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom<PictureUrlResolver>())
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom<AttractionImagesUrlResolver>())
                 .ReverseMap();
 
-            CreateMap<SetAttractionDto, Attraction>();
+
+            CreateMap<SetAttractionDto, Attraction>()
+                .ForMember(dest => dest.ImageUrl, opt => opt.Ignore())
+                .ReverseMap();
+
 
 
         }

@@ -50,7 +50,7 @@ namespace Tripmate.Application.Services.Countries
 
             }
             // Handle image upload
-            var imageUrl = await _fileService.UploadImageAsync(setCountryDto.ImageUrl, "countries");
+            var imageUrl = await _fileService.UploadImageAsync(setCountryDto.ImageUrl, "Countries");
             country.ImageUrl = imageUrl;
 
 
@@ -128,10 +128,10 @@ namespace Tripmate.Application.Services.Countries
             {
                 if (!string.IsNullOrEmpty(existingCountry.ImageUrl))
                 {
-                    _fileService.DeleteImage(existingCountry.ImageUrl, "countries");
+                    _fileService.DeleteImage(existingCountry.ImageUrl, "Countries");
                 }
 
-                var newImageUrl = await _fileService.UploadImageAsync(countryDto.ImageUrl, "countries");
+                var newImageUrl = await _fileService.UploadImageAsync(countryDto.ImageUrl, "Countries");
                 existingCountry.ImageUrl = newImageUrl;
             }
             else

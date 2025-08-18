@@ -11,10 +11,10 @@ using Tripmate.Domain.Entities.Models;
 
 namespace Tripmate.Application.Services.Attractions.Mapping
 {
-    public class PictureUrlResolver : IValueResolver<Attraction, AttractionDto, string>
+    public class AttractionImagesUrlResolver : IValueResolver<Attraction, AttractionDto, string>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public PictureUrlResolver(IHttpContextAccessor httpContextAccessor)
+        public AttractionImagesUrlResolver(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
@@ -31,7 +31,7 @@ namespace Tripmate.Application.Services.Attractions.Mapping
                 return source.ImageUrl; // Return the original URL if the request is not available
             }
             var baseUrl = $"{request.Scheme}://{request.Host}";
-            return $"{baseUrl}/Images/Countries/{source.ImageUrl}"; // Construct the full URL for the image
+            return $"{baseUrl}/Images/Attractions/{source.ImageUrl}"; // Construct the full URL for the image
 
         }
     }
