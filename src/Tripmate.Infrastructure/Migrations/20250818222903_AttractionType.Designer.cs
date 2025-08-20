@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tripmate.Infrastructure.Data.Context;
 
@@ -11,9 +12,11 @@ using Tripmate.Infrastructure.Data.Context;
 namespace Tripmate.Infrastructure.Migrations
 {
     [DbContext(typeof(TripmateDbContext))]
-    partial class TripmateDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250818222903_AttractionType")]
+    partial class AttractionType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -285,7 +288,7 @@ namespace Tripmate.Infrastructure.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.ToTable("Attractions", (string)null);
+                    b.ToTable("Attractions");
                 });
 
             modelBuilder.Entity("Tripmate.Domain.Entities.Models.Country", b =>
@@ -316,7 +319,7 @@ namespace Tripmate.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Countries", (string)null);
+                    b.ToTable("Countries");
                 });
 
             modelBuilder.Entity("Tripmate.Domain.Entities.Models.Hotel", b =>
@@ -355,7 +358,7 @@ namespace Tripmate.Infrastructure.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.ToTable("Hotels", (string)null);
+                    b.ToTable("Hotels");
                 });
 
             modelBuilder.Entity("Tripmate.Domain.Entities.Models.Region", b =>
@@ -391,7 +394,7 @@ namespace Tripmate.Infrastructure.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.ToTable("Regions", (string)null);
+                    b.ToTable("Regions");
                 });
 
             modelBuilder.Entity("Tripmate.Domain.Entities.Models.Restaurant", b =>
@@ -434,7 +437,7 @@ namespace Tripmate.Infrastructure.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.ToTable("Restaurants", (string)null);
+                    b.ToTable("Restaurants");
                 });
 
             modelBuilder.Entity("Tripmate.Domain.Entities.Models.Review", b =>
@@ -474,7 +477,7 @@ namespace Tripmate.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -556,7 +559,7 @@ namespace Tripmate.Infrastructure.Migrations
 
                             b1.HasKey("ApplicationUserId", "Id");
 
-                            b1.ToTable("RefreshToken", (string)null);
+                            b1.ToTable("RefreshToken");
 
                             b1.WithOwner()
                                 .HasForeignKey("ApplicationUserId");

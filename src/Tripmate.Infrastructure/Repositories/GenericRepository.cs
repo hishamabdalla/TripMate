@@ -40,9 +40,9 @@ namespace Tripmate.Infrastructure.Repositories
             _context.Entry(entity).State = EntityState.Modified;
 
         }
-        public void Delete(TKey id)
+        public void Delete(TEntity entity)
         {
-            var entity = _dbSet.Find(id);
+            
 
             if (entity != null)
             {
