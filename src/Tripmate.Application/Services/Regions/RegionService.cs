@@ -58,7 +58,29 @@ namespace Tripmate.Application.Services.Regions
 
 
         }
-      
-       
+        public async Task<ApiResponse<RegionDto>> GetRegionByIdAsync(int regionId)
+        {
+            var region = await _unitOfWork.Repository<Region, int>().GetByIdWithSpecAsync(new RegionSpecification(regionId));
+
+            if (region == null)
+            {
+                _logger.LogWarning($"Region with Id {regionId} not found.");
+                throw new NotFoundException($"Region with Id {regionId} not found.");
+            }
+
+            var regionDto = _mapper.Map<RegionDto>(region);
+
+            _logger.LogInformation($"Successfully retrieved region with Id {regionId}.");
+            return new ApiResponse<RegionDto>(regionDto)
+            {
+                Message = "Region retrieved successfully.",
+                Success = true
+            };
+
+        }
+
+     
+
+
     }
 }
