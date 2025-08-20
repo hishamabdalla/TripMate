@@ -79,8 +79,89 @@ namespace Tripmate.Application.Services.Regions
 
         }
 
-     
+        public async Task<ApiResponse<RegionDto>> CreateRegionAsync(SetRegionDto setRegionDto)
+        {
+            if (setRegionDto == null)
+            {
+                _logger.LogError("Attempted to create a null region.");
+                throw new BadRequestException("Region data cannot be null");
+            }
+
+            var region = _mapper.Map<Region>(setRegionDto);
 
 
+
+
+            if (setRegionDto.ImageUrl == null)
+            {
+                _logger.LogError("ImageUrl is required for adding a Region");
+                throw new BadRequestException("ImageUrl is Required");
+            }
+
+            var imageUrl = await _fileService.UploadImageAsync(setRegionDto.ImageUrl, "Regions");
+
+            region.ImageUrl = imageUrl;
+
+            await _unitOfWork.Repository<Region, int>().AddAsync(region);
+            await _unitOfWork.SaveChangesAsync();
+
+            _logger.LogInformation($"Region With ID {region.Id} Added Successfully.");
+
+            var regionExists = await _unitOfWork.Repository<Region, int>().GetByIdWithSpecAsync(new RegionSpecification(region.Id));
+            var regionDto = _mapper.Map<RegionDto>(regionExists);
+
+            return new ApiResponse<RegionDto>(regionDto)
+            {
+                Message = "Region added successfully.",
+                StatusCode = 201 // Created
+            };
+
+        }
+
+        public async Task<ApiResponse<RegionDto>> UpdateRegionAsync(int id, SetRegionDto setRegionDto)
+        {
+
+            if (setRegionDto == null)
+            {
+                _logger.LogError("Attempted to update a null region.");
+                throw new BadRequestException("Region data cannot be null");
+            }
+            var existRegion = await _unitOfWork.Repository<Region, int>().GetByIdAsync(id);
+
+            if (existRegion == null)
+            {
+                _logger.LogWarning("Region with ID {Id} not found for update.", id);
+                throw new NotFoundException($"Region With Id {id} not found.");
+
+            }
+            var region = _mapper.Map<Region>(setRegionDto);
+
+            if (setRegionDto.ImageUrl != null)
+            {
+                if (!string.IsNullOrEmpty(existRegion.ImageUrl))
+                {
+                    _fileService.DeleteImage(existRegion.ImageUrl, $"{nameof(Region)}s");
+                }
+
+                var imageUrl = await _fileService.UploadImageAsync(setRegionDto.ImageUrl, "Regions");
+
+                existRegion.ImageUrl = imageUrl;
+            }
+
+            await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation($"Region with ID {id} updated successfully.");
+
+
+            var regionResponse = _mapper.Map<RegionDto>(region);
+
+            return new ApiResponse<RegionDto>(regionResponse)
+            {
+                Message = "Region updated successfully.",
+                StatusCode = 200 // OK
+            };
+
+        }
+
+       
     }
 }
