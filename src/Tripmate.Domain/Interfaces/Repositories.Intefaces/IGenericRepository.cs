@@ -14,7 +14,7 @@ namespace Tripmate.Domain.Interfaces.Repositories.Intefaces
         Task<IEnumerable<TEntity>> GetAllAsync();
         Task AddAsync(TEntity entity);
         void Update(TEntity entity);
-        void Delete(TKey id);
+        void Delete(TEntity entity);
 
         //specification methods
 

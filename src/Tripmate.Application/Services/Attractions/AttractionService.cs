@@ -5,6 +5,7 @@ using Tripmate.Application.Services.Attractions.DTOs;
 using Tripmate.Application.Services.Image;
 using Tripmate.Domain.Common.Response;
 using Tripmate.Domain.Entities.Models;
+using Tripmate.Domain.Enums;
 using Tripmate.Domain.Exceptions;
 using Tripmate.Domain.Interfaces;
 using Tripmate.Domain.Specification.Attractions;
@@ -30,7 +31,7 @@ namespace Tripmate.Application.Services.Attractions
             var attractions = await _unitOfWork.Repository<Attraction, int>().GetAllWithSpecAsync(new AttractionSpecification());
             if (attractions == null || !attractions.Any())
             {
-                _logger.LogWarning("No attractions found.");
+                _logger.LogWarning($"No attractions found in {nameof(GetAllAttractionsAsync)}.");
                 throw new NotFoundException("Attractions not found.");
 
             }
@@ -93,6 +94,8 @@ namespace Tripmate.Application.Services.Attractions
                 _logger.LogError("Region with ID {RegionId} not found.", setAttractionDto.RegionId);
                 throw new NotFoundException($"Region with ID {setAttractionDto.RegionId} not found.");
             }
+
+            
 
             await _unitOfWork.Repository<Attraction, int>().AddAsync(attraction);
             await _unitOfWork.SaveChangesAsync();
@@ -173,7 +176,7 @@ namespace Tripmate.Application.Services.Attractions
                 _logger.LogWarning("Attraction with ID {Id} not found for deletion.", id);
                 throw new NotFoundException($"Attraction with ID {id} not found.");
             }
-             _unitOfWork.Repository<Attraction, int>().Delete(id);
+             _unitOfWork.Repository<Attraction, int>().Delete(attraction);
 
             if (!string.IsNullOrEmpty(attraction.ImageUrl))
             {
@@ -192,5 +195,14 @@ namespace Tripmate.Application.Services.Attractions
 
         }
 
+        public Task<ApiResponse<IEnumerable<AttractionDto>>> GetAttractionsByRegionIdAsync(int regionId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ApiResponse<IEnumerable<AttractionDto>>> GetAttractionsByTypeAsync(string type)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

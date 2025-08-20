@@ -167,7 +167,7 @@ namespace Tripmate.Application.Services.Countries
 
             }
 
-            _unitOfWork.Repository<Country, int>().Delete(id);
+            _unitOfWork.Repository<Country, int>().Delete(country);
             // Optionally, you can delete the image associated with the country
             if (!string.IsNullOrEmpty(country.ImageUrl))
             {

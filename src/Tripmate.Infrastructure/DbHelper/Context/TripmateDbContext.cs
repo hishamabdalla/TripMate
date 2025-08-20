@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Tripmate.Domain.Entities.Models;
@@ -14,8 +15,11 @@ namespace Tripmate.Infrastructure.Data.Context
     {
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             modelBuilder.ApplySoftDeleteQueryFilter();
             base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
         }
         public DbSet<ApplicationUser> applicationUsers { get; set; }
         public DbSet<Attraction> Attractions { get; set; }
