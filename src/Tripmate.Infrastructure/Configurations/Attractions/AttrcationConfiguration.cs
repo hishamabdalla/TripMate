@@ -1,0 +1,29 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Tripmate.Domain.Entities.Models;
+using Tripmate.Domain.Enums;
+
+namespace Tripmate.Infrastructure.Configurations.Attractions
+{
+    public class AttrcationConfiguration : IEntityTypeConfiguration<Attraction>
+    {
+        public void Configure(EntityTypeBuilder<Attraction> builder)
+        {
+            builder.Property(A => A.Type)
+                .HasConversion(new EnumToStringConverter<AttractionType>());
+
+            builder.HasOne(a=>a.Region)
+                .WithMany(r=>r.Attractions)
+                .HasForeignKey(a=>a.RegionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+        }
+    }
+}

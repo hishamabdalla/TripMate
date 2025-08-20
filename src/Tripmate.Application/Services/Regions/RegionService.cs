@@ -162,6 +162,34 @@ namespace Tripmate.Application.Services.Regions
 
         }
 
-       
+        public async Task<ApiResponse<bool>> DeleteRegionAsync(int id)
+        {
+            var existRegion = await _unitOfWork.Repository<Region, int>().GetByIdAsync(id);
+            if (existRegion == null)
+            {
+                _logger.LogWarning("Region with ID {Id} not found for deletion.", id);
+                throw new NotFoundException($"Region With Id {id} not found.");
+            }
+            _unitOfWork.Repository<Region, int>().Delete(existRegion);
+
+            await _unitOfWork.SaveChangesAsync();
+
+            if (!string.IsNullOrEmpty(existRegion.ImageUrl))
+            {
+                _fileService.DeleteImage(existRegion.ImageUrl, "Regions");
+            }
+
+            _logger.LogInformation($"Region with ID {id} deleted successfully.");
+            return new ApiResponse<bool>(true)
+            {
+                Message = "Region deleted successfully.",
+                StatusCode = 200 // OK
+            };
+
+        }
+
+
+
+
     }
 }
