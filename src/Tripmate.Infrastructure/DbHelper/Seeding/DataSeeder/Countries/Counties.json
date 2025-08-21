@@ -1,0 +1,72 @@
+[
+    {
+        "Name": "Egypt",
+        "Description": "A land of ancient wonders, home to the pyramids and the Nile River, perfect for history enthusiasts.",
+        "ImageUrl": "https://example.com/images/egypt.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z"
+    },
+    {
+        "Name": "Italy",
+        "Description": "A European gem with historic cities, Renaissance art, and world-class cuisine.",
+        "ImageUrl": "https://example.com/images/italy.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z"
+    },
+    {
+        "Name": "Thailand",
+        "Description": "A Southeast Asian paradise with tropical beaches, temples, and vibrant street markets.",
+        "ImageUrl": "https://example.com/images/thailand.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z"
+    },
+    {
+        "Name": "Brazil",
+        "Description": "A vibrant South American destination known for Carnival, rainforests, and samba.",
+        "ImageUrl": "https://example.com/images/brazil.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z"
+    },
+    {
+        "Name": "Japan",
+        "Description": "A blend of ancient traditions and modern innovation, famous for cherry blossoms and sushi.",
+        "ImageUrl": "https://example.com/images/japan.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z"
+    },
+    {
+        "Name": "France",
+        "Description": "A romantic destination with iconic landmarks like the Eiffel Tower and exquisite cuisine.",
+        "ImageUrl": "https://example.com/images/france.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z"
+    },
+    {
+        "Name": "Australia",
+        "Description": "A land of stunning landscapes, from the Outback to the Great Barrier Reef.",
+        "ImageUrl": "https://example.com/images/australia.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z"
+    },
+    {
+        "Name": "Morocco",
+        "Description": "A North African treasure with colorful souks, desert adventures, and historic medinas.",
+        "ImageUrl": "https://example.com/images/morocco.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z"
+    },
+    {
+        "Name": "Canada",
+        "Description": "A vast country offering breathtaking nature, from Rockies to Niagara Falls.",
+        "ImageUrl": "https://example.com/images/canada.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z"
+    },
+    {
+        "Name": "India",
+        "Description": "A diverse nation with vibrant festivals, historic forts, and spiritual landmarks.",
+        "ImageUrl": "https://example.com/images/india.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z"
+    }
+]

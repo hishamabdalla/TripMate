@@ -1,0 +1,162 @@
+[
+    {
+        "Name": "Giza",
+        "Description": "Home to the Great Pyramids and the Sphinx, a must-visit for history lovers.",
+        "ImageUrl": "https://example.com/images/giza.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 1
+    },
+    {
+        "Name": "Luxor",
+        "Description": "Known as the world's greatest open-air museum with temples and tombs.",
+        "ImageUrl": "https://example.com/images/luxor.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 1
+    },
+    {
+        "Name": "Tuscany",
+        "Description": "Famous for Florence, vineyards, and rolling hills, perfect for art and wine tours.",
+        "ImageUrl": "https://example.com/images/tuscany.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 2
+    },
+    {
+        "Name": "Veneto",
+        "Description": "Home to Venice, with its iconic canals and historic architecture.",
+        "ImageUrl": "https://example.com/images/veneto.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 2
+    },
+    {
+        "Name": "Chiang Mai",
+        "Description": "A cultural hub with ancient temples and lush mountains.",
+        "ImageUrl": "https://example.com/images/chiangmai.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 3
+    },
+    {
+        "Name": "Phuket",
+        "Description": "A tropical island with stunning beaches and vibrant nightlife.",
+        "ImageUrl": "https://example.com/images/phuket.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 3
+    },
+    {
+        "Name": "Rio de Janeiro",
+        "Description": "Famous for Copacabana beach and the vibrant Carnival festival.",
+        "ImageUrl": "https://example.com/images/riodejaneiro.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 4
+    },
+    {
+        "Name": "Amazonas",
+        "Description": "A gateway to the Amazon rainforest, ideal for eco-tourism.",
+        "ImageUrl": "https://example.com/images/amazonas.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 4
+    },
+    {
+        "Name": "Kansai",
+        "Description": "Home to Kyoto and Osaka, rich in temples and modern attractions.",
+        "ImageUrl": "https://example.com/images/kansai.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 5
+    },
+    {
+        "Name": "Hokkaido",
+        "Description": "Known for its ski resorts, hot springs, and natural beauty.",
+        "ImageUrl": "https://example.com/images/hokkaido.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 5
+    },
+    {
+        "Name": "Île-de-France",
+        "Description": "The region of Paris, with iconic landmarks like the Louvre and Eiffel Tower.",
+        "ImageUrl": "https://example.com/images/iledefrance.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 6
+    },
+    {
+        "Name": "Provence",
+        "Description": "Famous for lavender fields and charming villages.",
+        "ImageUrl": "https://example.com/images/provence.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 6
+    },
+    {
+        "Name": "Queensland",
+        "Description": "Home to the Great Barrier Reef and tropical rainforests.",
+        "ImageUrl": "https://example.com/images/queensland.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 7
+    },
+    {
+        "Name": "New South Wales",
+        "Description": "Features Sydney's Opera House and Bondi Beach.",
+        "ImageUrl": "https://example.com/images/newsouthwales.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 7
+    },
+    {
+        "Name": "Marrakech",
+        "Description": "A vibrant city with bustling souks and historic palaces.",
+        "ImageUrl": "https://example.com/images/marrakech.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 8
+    },
+    {
+        "Name": "Fes",
+        "Description": "Known for its ancient medina and traditional craftsmanship.",
+        "ImageUrl": "https://example.com/images/fes.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 8
+    },
+    {
+        "Name": "British Columbia",
+        "Description": "Offers stunning mountains and coastal adventures in Vancouver.",
+        "ImageUrl": "https://example.com/images/britishcolumbia.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 9
+    },
+    {
+        "Name": "Alberta",
+        "Description": "Home to Banff and Jasper National Parks, ideal for outdoor enthusiasts.",
+        "ImageUrl": "https://example.com/images/alberta.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 9
+    },
+    {
+        "Name": "Rajasthan",
+        "Description": "Famous for its royal palaces and desert forts.",
+        "ImageUrl": "https://example.com/images/rajasthan.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 10
+    },
+    {
+        "Name": "Kerala",
+        "Description": "Known for its serene backwaters and lush greenery.",
+        "ImageUrl": "https://example.com/images/kerala.jpg",
+        "IsDeleted": false,
+        "CreatedAt": "2025-08-20T23:58:00Z",
+        "CountryId": 10
+    }
+]
