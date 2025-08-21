@@ -1,15 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using Tripmate.API.Middlewares;
 using Tripmate.Infrastructure.Data.Context;
+using Tripmate.Infrastructure.DbHelper.Seeding;
 
 namespace Tripmate.API.Helper
 {
     public static class ConfigureMiddleware
     {
-        public static void ConfigureMiddlewareServices(this WebApplication app)
+        public static async Task ConfigureMiddlewareServices(this WebApplication app)
         {
             // Apply migrations at startup
             app.ApplyMigrations();
+
+             await app.SeedData();
 
             // Configure the HTTP request pipeline.
            
@@ -33,7 +37,6 @@ namespace Tripmate.API.Helper
         {
             using var scope = app.Services.CreateScope();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<TripmateDbContext>>();
-
             var context = scope.ServiceProvider.GetRequiredService<TripmateDbContext>();
 
             var pendingMigrations = context.Database.GetPendingMigrations();
@@ -47,6 +50,19 @@ namespace Tripmate.API.Helper
             {
                 logger.LogInformation("No pending migrations found.");
             }
+        }
+
+        private static async Task SeedData(this WebApplication app)
+        {
+
+            using var scope=app.Services.CreateScope();
+
+            var services = scope.ServiceProvider;
+
+            var seeder = services.GetRequiredService<ISeeder>();
+
+            await seeder.SeedAsync();
+
         }
     }
 }

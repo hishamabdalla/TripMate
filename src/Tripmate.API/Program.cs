@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using Tripmate.API.Helper;
 using Tripmate.Application.Services.Identity.VerifyEmail;
 using Tripmate.Infrastructure.Data.Context;
@@ -8,7 +9,7 @@ namespace Tripmate.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,7 @@ namespace Tripmate.API
 
             var app = builder.Build();
             // Configure Middleware
-            app.ConfigureMiddlewareServices();
+            await app.ConfigureMiddlewareServices();
 
             app.Run();
         }

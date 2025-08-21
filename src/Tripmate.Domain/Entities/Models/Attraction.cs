@@ -15,7 +15,10 @@ namespace Tripmate.Domain.Entities.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
+<<<<<<< Updated upstream
         public AttractionType Type { get; set; } 
+=======
+>>>>>>> Stashed changes
         public string OpeningHours { get; set; }
         public string TicketPrice { get; set; }
         public int RegionId { get; set; }

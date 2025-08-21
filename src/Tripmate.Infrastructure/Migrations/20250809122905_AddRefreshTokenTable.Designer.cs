@@ -187,8 +187,7 @@ namespace Tripmate.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsEmailVerified")
-                        .HasColumnType("bit");
+                   
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");

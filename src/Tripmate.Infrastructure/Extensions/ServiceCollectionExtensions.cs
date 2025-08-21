@@ -13,6 +13,7 @@ using Tripmate.Domain.AppSettings;
 using Tripmate.Domain.Entities.Models;
 using Tripmate.Domain.Interfaces;
 using Tripmate.Infrastructure.Data.Context;
+using Tripmate.Infrastructure.DbHelper.Seeding;
 using Tripmate.Infrastructure.Repositories;
 
 
@@ -37,6 +38,8 @@ namespace Tripmate.Infrastructure.Extensions
 
             // Add Authorization services
             services.AddAuthorizationServices();
+
+            services.AddScoped<ISeeder, Seeder>();
 
             return services;
         }

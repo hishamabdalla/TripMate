@@ -18,12 +18,7 @@ namespace Tripmate.Infrastructure.Migrations
                 nullable: false,
                 defaultValue: false);
 
-            migrationBuilder.AddColumn<bool>(
-                name: "IsEmailVerified",
-                table: "AspNetUsers",
-                type: "bit",
-                nullable: false,
-                defaultValue: false);
+          
 
             migrationBuilder.AddColumn<string>(
                 name: "VerificationCode",
@@ -46,10 +41,7 @@ namespace Tripmate.Infrastructure.Migrations
                 name: "IsActive",
                 table: "AspNetUsers");
 
-            migrationBuilder.DropColumn(
-                name: "IsEmailVerified",
-                table: "AspNetUsers");
-
+          
             migrationBuilder.DropColumn(
                 name: "VerificationCode",
                 table: "AspNetUsers");
