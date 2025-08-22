@@ -29,6 +29,9 @@ namespace Tripmate.Domain.Specification
         /// Gets the order by descending expression for the specification.
         /// </summary>
         Expression<Func<TEntity, object>> OrderByDescending { get; set; }
+        int Skip { get; set; }
+        int Take { get; set; }
+        public bool IsPagingEnabled { get; set; }
 
 
     }
