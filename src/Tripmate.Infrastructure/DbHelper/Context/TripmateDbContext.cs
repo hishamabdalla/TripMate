@@ -15,6 +15,7 @@ namespace Tripmate.Infrastructure.Data.Context
     {
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+          
 
             modelBuilder.ApplySoftDeleteQueryFilter();
             base.OnModelCreating(modelBuilder);

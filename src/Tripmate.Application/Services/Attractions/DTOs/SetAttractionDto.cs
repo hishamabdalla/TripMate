@@ -15,7 +15,7 @@ namespace Tripmate.Application.Services.Attractions.DTOs
         public string Description { get; set; }
         public IFormFile? ImageUrl { get; set; }
         public string Type { get; set; } = string.Empty;
-        public DateTime OpeningHours { get; set; }
+        public string OpeningHours { get; set; }
         public string TicketPrice { get; set; }
         public int RegionId { get; set; }
 

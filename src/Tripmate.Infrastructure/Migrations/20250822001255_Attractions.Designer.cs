@@ -12,8 +12,8 @@ using Tripmate.Infrastructure.Data.Context;
 namespace Tripmate.Infrastructure.Migrations
 {
     [DbContext(typeof(TripmateDbContext))]
-    [Migration("20250817232343_AddTypeForAttraction")]
-    partial class AddTypeForAttraction
+    [Migration("20250822001255_Attractions")]
+    partial class Attractions
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -269,8 +269,9 @@ namespace Tripmate.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("OpeningHours")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("OpeningHours")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RegionId")
                         .HasColumnType("int");
