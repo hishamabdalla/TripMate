@@ -1,4 +1,5 @@
-﻿using Tripmate.Application.Extension;
+﻿using FluentValidation.AspNetCore;
+using Tripmate.Application.Extension;
 using Tripmate.Infrastructure.Extensions;
 
 namespace Tripmate.API.Helper
@@ -9,14 +10,16 @@ namespace Tripmate.API.Helper
         {
 
             services.AddControllers();
+           
             // Add Swagger service
             services.AddSwaggerService(); 
             // Add CORS policy
             services.AddCorsPolicy();
-            // Add Infrastructure services
-            services.AddInfrastructureServices(configuration);
             // Add Application services
             services.AddApplicationServices(configuration);
+            // Add Infrastructure services
+            services.AddInfrastructureServices(configuration);
+            
             return services;
         }
 

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,6 @@ namespace Tripmate.Application.Services.Countries
 
         public async Task<ApiResponse<CountryDto>> AddAsync(SetCountryDto setCountryDto)
         {
-
             if (setCountryDto == null)
             {
                 _logger.LogError("Attempted to add a null country.");
@@ -41,8 +41,7 @@ namespace Tripmate.Application.Services.Countries
 
 
             var country = _mapper.Map<Country>(setCountryDto);
-           
-            
+
             if (setCountryDto.ImageUrl == null)
             {
                 _logger.LogError("ImageUrl is required for adding a country.");
@@ -53,7 +52,6 @@ namespace Tripmate.Application.Services.Countries
             var imageUrl = await _fileService.UploadImageAsync(setCountryDto.ImageUrl, "Countries");
             country.ImageUrl = imageUrl;
 
-
             await _unitOfWork.Repository<Country, int>().AddAsync(country);
             await _unitOfWork.SaveChangesAsync();
             _logger.LogInformation("Country with ID {Id} added successfully.", country.Id);
@@ -63,11 +61,7 @@ namespace Tripmate.Application.Services.Countries
                 Message = "Country added successfully.",
                 StatusCode = 201 // Created
             };
-
         }
-
-
-       
 
         public async Task<ApiResponse<IEnumerable<CountryDto>>> GetAllCountriesAsync()
 
@@ -116,13 +110,13 @@ namespace Tripmate.Application.Services.Countries
                 throw new BadRequestException("Country data cannot be null.");
             }
 
+           
             var existingCountry = await _unitOfWork.Repository<Country, int>().GetByIdAsync(id);
             if (existingCountry == null)
             {
                 _logger.LogWarning("Country with ID {Id} not found for update.", id);
                 throw new NotFoundException("Country", id.ToString());
             }
-
 
             if (countryDto.ImageUrl != null)
             {
@@ -142,8 +136,6 @@ namespace Tripmate.Application.Services.Countries
             // Map the other properties
             existingCountry.Name = countryDto.Name;
             existingCountry.Description = countryDto.Description;
-
-
 
             _unitOfWork.Repository<Country, int>().Update(existingCountry);
             await _unitOfWork.SaveChangesAsync();

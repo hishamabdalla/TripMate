@@ -1,5 +1,5 @@
-﻿
-using FluentValidation;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +10,7 @@ using Tripmate.Application.Services.Abstractions.Identity;
 using Tripmate.Application.Services.Abstractions.Region;
 using Tripmate.Application.Services.Attractions;
 using Tripmate.Application.Services.Countries;
+using Tripmate.Application.Services.Countries.DTOs;
 using Tripmate.Application.Services.Identity;
 using Tripmate.Application.Services.Identity.ForgotPassword;
 using Tripmate.Application.Services.Identity.Login;
@@ -37,8 +38,8 @@ namespace Tripmate.Application.Extension
             // Register application services here
             services.RegisterApplicationServices(configuration);
 
-           services.AddScoped<IValidator<RegisterDto>, RegisterDtoValidator>();
-
+            services.AddScoped<IValidator<RegisterDto>, RegisterDtoValidator>();
+            services.AddScoped<IValidator<SetCountryDto>, CountryValidator>();
 
             // Register options
             services.OptionsSetup(configuration);
@@ -111,10 +112,12 @@ namespace Tripmate.Application.Extension
         }
 
         private static void AddFluentValidation(this IServiceCollection services)
-        { 
+        {
             // Register FluentValidation services
-        
-            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly())
+                .AddFluentValidationAutoValidation();
+
 
         }
     }

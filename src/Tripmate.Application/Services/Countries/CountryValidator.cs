@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,20 +19,17 @@ namespace Tripmate.Application.Services.Countries
         {
             RuleFor(country => country.Name)
                 .NotEmpty().WithMessage("Country name is required.")
-                .MaximumLength(100).WithMessage("Country name must not exceed 100 characters.");
+                .MaximumLength(50).WithMessage("Country name must not exceed 50 characters.");
             
             RuleFor(country=>country.Description)
                 .MaximumLength(500).WithMessage("Country description must not exceed 500 characters.");
 
-
             RuleFor(country => country.ImageUrl)
-                .Must(F => _allowedExtensions.Contains(Path.GetExtension(F.FileName).ToLower()))
+                .NotNull().WithMessage("Image is required.")
+                .Must(file => file != null && _allowedExtensions.Contains(Path.GetExtension(file.FileName).ToLower()))
                 .WithMessage($"Image must be one of the following formats: {string.Join(", ", _allowedExtensions)}")
-                .Must(F => F.Length <= MaxSize)
+                .Must(file => file != null && file.Length <= MaxSize)
                 .WithMessage($"Image size must not exceed {MaxSize / 1024 / 1024} MB.");
-
-
         }
     }
-      
 }
