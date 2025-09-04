@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tripmate.Domain", "src\Trip
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tripmate.Infrastructure", "src\Tripmate.Infrastructure\Tripmate.Infrastructure.csproj", "{19EEF7D2-FC1B-1AF8-1C51-E0875AD4491E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tripmate.ApplicationTests", "src\Tripmate.ApplicationTests\Tripmate.ApplicationTests.csproj", "{3D169195-AA2E-4893-A0C4-75F29C41EAA1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{19EEF7D2-FC1B-1AF8-1C51-E0875AD4491E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19EEF7D2-FC1B-1AF8-1C51-E0875AD4491E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19EEF7D2-FC1B-1AF8-1C51-E0875AD4491E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D169195-AA2E-4893-A0C4-75F29C41EAA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D169195-AA2E-4893-A0C4-75F29C41EAA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D169195-AA2E-4893-A0C4-75F29C41EAA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D169195-AA2E-4893-A0C4-75F29C41EAA1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

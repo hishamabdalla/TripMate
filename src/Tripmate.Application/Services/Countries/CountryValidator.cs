@@ -24,7 +24,7 @@ namespace Tripmate.Application.Services.Countries
             RuleFor(country=>country.Description)
                 .MaximumLength(500).WithMessage("Country description must not exceed 500 characters.");
 
-            RuleFor(country => country.ImageUrl)
+            RuleFor(country => country.ImageUrl).Cascade(CascadeMode.Stop)
                 .NotNull().WithMessage("Image is required.")
                 .Must(file => file != null && _allowedExtensions.Contains(Path.GetExtension(file.FileName).ToLower()))
                 .WithMessage($"Image must be one of the following formats: {string.Join(", ", _allowedExtensions)}")
