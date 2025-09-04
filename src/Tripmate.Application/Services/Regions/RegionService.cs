@@ -87,6 +87,16 @@ namespace Tripmate.Application.Services.Regions
                 throw new BadRequestException("Region data cannot be null");
             }
 
+            var country = await _unitOfWork.Repository<Country, int>().GetByIdAsync(setRegionDto.CountryId);
+
+            if (country == null)
+            {
+                _logger.LogError($"Country with ID {setRegionDto.CountryId} not found.");
+                throw new NotFoundException($"Country with ID {setRegionDto.CountryId} not found.");
+
+            }
+
+
             var region = _mapper.Map<Region>(setRegionDto);
 
 
