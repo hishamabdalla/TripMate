@@ -20,6 +20,7 @@ namespace Tripmate.Domain.Interfaces.Repositories.Intefaces
 
         Task<IEnumerable<TEntity>> GetAllWithSpecAsync(ISpecification<TEntity, TKey> specification);
         Task<TEntity> GetByIdWithSpecAsync(ISpecification<TEntity, TKey> specification);
+        Task<int> CountAsync(ISpecification<TEntity, TKey> spec);
 
     }
 }

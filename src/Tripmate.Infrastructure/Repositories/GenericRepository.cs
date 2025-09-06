@@ -65,6 +65,10 @@ namespace Tripmate.Infrastructure.Repositories
         {
             return SpecificationEvaluator<TEntity, TKey>.GetQuery(_dbSet.AsQueryable(), specification);
         }
+        public async Task<int> CountAsync(ISpecification<TEntity, TKey> spec)
+        {
+            return await ApplySpecification(spec).CountAsync();
+        }
 
     }
 }

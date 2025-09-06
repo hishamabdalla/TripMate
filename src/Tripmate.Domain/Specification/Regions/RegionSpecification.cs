@@ -9,6 +9,12 @@ namespace Tripmate.Domain.Specification.Regions
 {
     public class RegionSpecification:BaseSpecification<Region,int>
     {
+        public RegionSpecification(RegionParameters parameters) : base(x =>(string.IsNullOrEmpty(parameters.Search) || x.Name.ToLower().Contains(parameters.Search.ToLowerInvariant())))
+        {
+            ApplyInclude();
+            int skip = Math.Max((parameters.PageNumber - 1) * parameters.PageSize, 0);
+            ApplyPaging(skip, parameters.PageSize);
+        }
         public RegionSpecification(int countryId, bool includeAll=true)
             : base(x => x.CountryId == countryId)
         {

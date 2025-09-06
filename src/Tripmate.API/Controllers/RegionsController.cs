@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Tripmate.Application.Services.Abstractions.Region;
 using Tripmate.Application.Services.Regions.DTOs;
+using Tripmate.Domain.Specification.Regions;
 
 namespace Tripmate.API.Controllers
 {
@@ -51,6 +52,12 @@ namespace Tripmate.API.Controllers
             var result = await _regionService.DeleteRegionAsync(regionId);
             return Ok(result);
 
+        }
+        [HttpGet("GetAllRegions")]
+        public async Task<IActionResult> GetAllRegions([FromQuery] RegionParameters parameters)
+        {
+            var result = await _regionService.GetRegionsAsync(parameters);
+            return Ok(result);
         }
     }
     

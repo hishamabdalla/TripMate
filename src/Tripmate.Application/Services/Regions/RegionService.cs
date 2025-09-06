@@ -197,9 +197,33 @@ namespace Tripmate.Application.Services.Regions
             };
 
         }
+        public async Task<ApiResponse<PaginationResponse<RegionDto>>> GetRegionsAsync(RegionParameters parameters)
+        {
+            if (parameters.PageNumber <= 0)
+                throw new BadRequestException("PageNumber must be greater than 0.");
 
+            if (parameters.PageSize <= 0)
+                throw new BadRequestException("PageSize must be greater than 0.");
 
+            var dataSpec = new RegionSpecification(parameters);
+            var countSpec = new RegionForCountingSpecification(parameters);
+            var regions = await _unitOfWork.Repository<Region, int>().GetAllWithSpecAsync(dataSpec);
+            var totalCount = await _unitOfWork.Repository<Region, int>().CountAsync(countSpec);
 
+            if (regions == null || !regions.Any())
+            {
+                _logger.LogWarning("No regions found matching the provided criteria.");
+                throw new NotFoundException("No regions found matching the provided criteria.");
+            }
+            var regionDtos = _mapper.Map<IEnumerable<RegionDto>>(regions);
+            var pagedResult = new PaginationResponse<RegionDto>(regionDtos, totalCount, parameters.PageNumber, parameters.PageSize);
 
+            return new ApiResponse<PaginationResponse<RegionDto>>(pagedResult)
+            {
+                Message = "Regions retrieved successfully",
+                Success = true,
+                StatusCode = 200
+            };
+        }
     }
 }
