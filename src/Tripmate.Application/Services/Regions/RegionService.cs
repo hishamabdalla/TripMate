@@ -1,10 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tripmate.Application.Services.Abstractions.Region;
 using Tripmate.Application.Services.Image;
 using Tripmate.Application.Services.Regions.DTOs;
@@ -23,13 +18,18 @@ namespace Tripmate.Application.Services.Regions
         private readonly IMapper _mapper;
         private readonly ILogger<RegionService> _logger;
         private readonly IFileService _fileService;
-        public RegionService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<RegionService> logger , IFileService fileService)
+
+        public RegionService(IUnitOfWork unitOfWork,
+            IMapper mapper,
+            ILogger<RegionService> logger,
+            IFileService fileService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
             _fileService = fileService;
         }
+
         public async Task<ApiResponse<IEnumerable<RegionDto>>> GetAllRegionForCountryAsync(int countryId)
         {
             var spec = new CountrySpecification(countryId);
@@ -197,7 +197,7 @@ namespace Tripmate.Application.Services.Regions
             };
 
         }
-        public async Task<ApiResponse<PaginationResponse<RegionDto>>> GetRegionsAsync(RegionParameters parameters)
+        public async Task<PaginationResponse<IEnumerable<RegionDto>>> GetRegionsAsync(RegionParameters parameters)
         {
             if (parameters.PageNumber <= 0)
                 throw new BadRequestException("PageNumber must be greater than 0.");
@@ -216,14 +216,9 @@ namespace Tripmate.Application.Services.Regions
                 throw new NotFoundException("No regions found matching the provided criteria.");
             }
             var regionDtos = _mapper.Map<IEnumerable<RegionDto>>(regions);
-            var pagedResult = new PaginationResponse<RegionDto>(regionDtos, totalCount, parameters.PageNumber, parameters.PageSize);
 
-            return new ApiResponse<PaginationResponse<RegionDto>>(pagedResult)
-            {
-                Message = "Regions retrieved successfully",
-                Success = true,
-                StatusCode = 200
-            };
+            return new PaginationResponse<IEnumerable<RegionDto>> (regionDtos, totalCount, parameters.PageNumber,
+                parameters.PageSize);
         }
     }
 }

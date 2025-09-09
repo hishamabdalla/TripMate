@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using Tripmate.Domain.Entities.Base;
 
 namespace Tripmate.Domain.Specification
@@ -40,10 +35,10 @@ namespace Tripmate.Domain.Specification
         {
             OrderByDescending = orderByDescExpression;
         }
-        protected void ApplyPaging(int skip, int take)
+        protected void ApplyPaging(int pageNumber, int pageSize)
         {
-            Skip = skip;
-            Take = take;
+            Skip = Math.Max((pageNumber - 1) * pageSize, 0);
+            Take = pageSize;
             IsPagingEnabled = true;
         }
 
