@@ -1,10 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tripmate.Application.Services.Abstractions.Identity;
 using Tripmate.Application.Services.Identity.RefreshTokens.DTOs;
 using Tripmate.Domain.Common.Response;
@@ -12,23 +7,15 @@ using Tripmate.Domain.Entities.Models;
 
 namespace Tripmate.Application.Services.Identity.RefreshTokens
 {
-    public class RefreshTokenHandler : IRefreshTokenHandler
+    public class RefreshTokenHandler(UserManager<ApplicationUser> userManager, ITokenService tokenService)
+        : IRefreshTokenHandler
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ITokenService _tokenService;
-
-        public RefreshTokenHandler(UserManager<ApplicationUser> userManager, ITokenService tokenService)
-        {
-            _tokenService = tokenService;
-            _userManager = userManager;
-        }
-
         public async Task<ApiResponse<TokenResponse>> HandleRefreshTokenAsync(RefreshTokenDto refreshTokenDto)
         {
 
             // Logic to validate the refresh token and generate a new access token
 
-            var user =await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == refreshTokenDto.RefreshToken));
+            var user =await userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == refreshTokenDto.RefreshToken));
 
             if (user ==null)
             {
@@ -47,12 +34,12 @@ namespace Tripmate.Application.Services.Identity.RefreshTokens
             //revoke the old refresh token
             refreshTokenEntity.RevokedOn = DateTime.UtcNow;
 
-            var newRefreshToken = _tokenService.GenerateRefreshToken();
+            var newRefreshToken = tokenService.GenerateRefreshToken();
             user.RefreshTokens.Add(newRefreshToken);
-            await _userManager.UpdateAsync(user);
+            await userManager.UpdateAsync(user);
 
             // Generate a new access token
-            var tokenResponse = await _tokenService.GenerateTokenAsync(user);
+            var tokenResponse = await tokenService.GenerateTokenAsync(user);
             tokenResponse.RefreshToken = newRefreshToken.Token;
             tokenResponse.RefreshTokenExpiration = newRefreshToken.Expiration;
 

@@ -1,11 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tripmate.Domain.Entities.Base;
-using Tripmate.Domain.Entities.Models;
 using Tripmate.Domain.Interfaces.Repositories.Intefaces;
 using Tripmate.Domain.Specification;
 using Tripmate.Infrastructure.Data.Context;

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Tripmate.Application.Services.Identity.VerifyEmail
+﻿namespace Tripmate.Application.Services.Identity.VerifyEmail
 {
     public static class EmailTemplates
     {

@@ -1,10 +1,4 @@
 ﻿using Xunit;
-using Tripmate.Application.Services.Countries;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tripmate.Application.Services.Countries.DTOs;
 using Microsoft.AspNetCore.Http;
 using Moq;
@@ -15,11 +9,7 @@ namespace Tripmate.Application.Services.Countries.Tests
     public class CountryValidatorTests
     {
 
-        private readonly CountryValidator _countryValidator;
-        public CountryValidatorTests()
-        {
-            _countryValidator = new CountryValidator();
-        }
+        private readonly CountryValidator _countryValidator = new();
 
         [Fact]
         public void SetCountryDto_WithValidData_ShouldPassValidation()

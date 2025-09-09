@@ -4,29 +4,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MimeKit;
 using MimeKit.Text;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tripmate.Application.Services.Identity.VerifyEmail
 {
-    public class EmailHandler : IEmailHandler
+    public class EmailHandler(IConfiguration configuration, ILogger<EmailHandler> logger) : IEmailHandler
     {
-        private readonly IConfiguration _configuration;
-        private readonly ILogger<EmailHandler> _logger;
-        public EmailHandler(IConfiguration configuration, ILogger<EmailHandler> logger)
-        {
-            _configuration = configuration;
-            _logger = logger;
-        }
         public async Task SendResetCodeEmail(string email, string code)
         {
             try
             {
-                var emailSetting = _configuration.GetSection("EmailSettings");
+                var emailSetting = configuration.GetSection("EmailSettings");
                 if (string.IsNullOrEmpty(emailSetting["Email"]))
                     throw new ArgumentNullException("Email is not configured");
                 if (string.IsNullOrEmpty(emailSetting["DisplayName"]))
@@ -58,11 +45,11 @@ namespace Tripmate.Application.Services.Identity.VerifyEmail
                 await smtp.SendAsync(message);
                 await smtp.DisconnectAsync(true);
 
-                _logger.LogInformation($"Password reset email sent to {email}");
+                logger.LogInformation($"Password reset email sent to {email}");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to send reset email to {email}");
+                logger.LogError(ex, $"Failed to send reset email to {email}");
                 throw;
             }
         }
@@ -71,7 +58,7 @@ namespace Tripmate.Application.Services.Identity.VerifyEmail
         {
             try
             {
-                var emailSetting = _configuration.GetSection("EmailSettings");
+                var emailSetting = configuration.GetSection("EmailSettings");
                 if (string.IsNullOrEmpty(emailSetting["Email"]))
                     throw new ArgumentNullException("Email is not configured");
                 if (string.IsNullOrEmpty(emailSetting["DisplayName"]))
@@ -106,12 +93,12 @@ namespace Tripmate.Application.Services.Identity.VerifyEmail
                 }
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
-                _logger.LogInformation($"Verification email successfully delivered to {email}");
+                logger.LogInformation($"Verification email successfully delivered to {email}");
             }
 
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Email delivery failed for recipient: {email}");
+                logger.LogError(ex, $"Email delivery failed for recipient: {email}");
                 throw;
             }
         }

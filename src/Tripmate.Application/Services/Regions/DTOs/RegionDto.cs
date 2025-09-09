@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tripmate.Domain.Entities.Models;
-
-namespace Tripmate.Application.Services.Regions.DTOs
+﻿namespace Tripmate.Application.Services.Regions.DTOs
 {
     public class RegionDto
     {

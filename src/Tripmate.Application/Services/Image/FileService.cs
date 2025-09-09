@@ -1,25 +1,14 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tripmate.Domain.Exceptions;
 
 namespace Tripmate.Application.Services.Image
 {
-    public class FileService : IFileService
+    public class FileService(IWebHostEnvironment webHostEnvironment) : IFileService
     {
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
         private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png" };
         private const long _maxFileSize = 5 * 1024 * 1024; // 5 MB
-
-        public FileService(IWebHostEnvironment webHostEnvironment)
-        {
-            _webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
-        }
 
         public async Task<string> UploadImageAsync(IFormFile imageFile, string? folderName)
         {

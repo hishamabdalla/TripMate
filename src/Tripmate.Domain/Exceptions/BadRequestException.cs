@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Tripmate.Domain.Exceptions
+﻿namespace Tripmate.Domain.Exceptions
 {
-    public class BadRequestException: Exception
-    {
-        public BadRequestException(string message) : base(message)
-        {
-        }
-        
-    }
+    public class BadRequestException(string message) : Exception(message);
 }

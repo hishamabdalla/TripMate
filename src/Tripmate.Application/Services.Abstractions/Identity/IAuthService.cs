@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tripmate.Application.Services.Identity.ForgotPassword.DTO;
+﻿using Tripmate.Application.Services.Identity.ForgotPassword.DTO;
 using Tripmate.Application.Services.Identity.Login.DTOs;
 using Tripmate.Application.Services.Identity.RefreshTokens.DTOs;
 using Tripmate.Application.Services.Identity.Register.DTOs;

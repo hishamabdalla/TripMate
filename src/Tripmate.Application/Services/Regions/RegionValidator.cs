@@ -1,10 +1,4 @@
 ﻿using FluentValidation;
-using Microsoft.AspNetCore.Http.Features;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tripmate.Application.Services.Regions.DTOs;
 
 namespace Tripmate.Application.Services.Regions

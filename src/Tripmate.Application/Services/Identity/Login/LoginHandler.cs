@@ -1,9 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tripmate.Application.Services.Abstractions.Identity;
 using Tripmate.Application.Services.Identity.Login.DTOs;
 using Tripmate.Domain.Common.Response;
@@ -11,20 +6,13 @@ using Tripmate.Domain.Entities.Models;
 
 namespace Tripmate.Application.Services.Identity.Login
 {
-    public class LoginHandler:ILoginHandler
+    public class LoginHandler(UserManager<ApplicationUser> userManager, ITokenService tokenService)
+        : ILoginHandler
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ITokenService tokenService;
-        public LoginHandler(UserManager<ApplicationUser> userManager, ITokenService tokenService)
-        {
-            _userManager = userManager;
-            this.tokenService = tokenService;
-        }
-
         public async Task<ApiResponse<TokenResponse>> HandleLoginAsync(LoginDto loginDto)
         {
-            var user = await _userManager.FindByEmailAsync(loginDto.Email);
-            var isPasswordValid = await _userManager.CheckPasswordAsync(user, loginDto.Password);
+            var user = await userManager.FindByEmailAsync(loginDto.Email);
+            var isPasswordValid = await userManager.CheckPasswordAsync(user, loginDto.Password);
 
             // Check if user is null or password is invalid
 
@@ -49,7 +37,7 @@ namespace Tripmate.Application.Services.Identity.Login
             {
                 var newRefreshToken = tokenService.GenerateRefreshToken();
                 user.RefreshTokens.Add(newRefreshToken);
-                await _userManager.UpdateAsync(user);
+                await userManager.UpdateAsync(user);
 
                 tokenResponse.RefreshToken = newRefreshToken.Token;
                 tokenResponse.RefreshTokenExpiration = newRefreshToken.Expiration;

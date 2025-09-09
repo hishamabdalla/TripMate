@@ -1,9 +1,4 @@
-
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 using Tripmate.API.Helper;
-using Tripmate.Application.Services.Identity.VerifyEmail;
-using Tripmate.Infrastructure.Data.Context;
 
 namespace Tripmate.API
 {

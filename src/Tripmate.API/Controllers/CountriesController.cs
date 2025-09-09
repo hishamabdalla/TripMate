@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Tripmate.Application.Services.Abstractions.Country;
 using Tripmate.Application.Services.Countries.DTOs;
 
@@ -8,19 +6,12 @@ namespace Tripmate.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CountriesController : ControllerBase
+    public class CountriesController(ICountryService countryService) : ControllerBase
     {
-        private readonly ICountryService _countryService;
-
-        public CountriesController(ICountryService countryService)
-        {
-            _countryService = countryService;
-        }
-
         [HttpGet]
         public async Task<IActionResult> GetAllCountries()
         {
-            var response = await _countryService.GetAllCountriesAsync();
+            var response = await countryService.GetAllCountriesAsync();
             if (!response.Success)
             {
                 return BadRequest(response);
@@ -31,7 +22,7 @@ namespace Tripmate.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCountryById(int id)
         {
-            var response = await _countryService.GetCountryByIdAsync(id);
+            var response = await countryService.GetCountryByIdAsync(id);
             if (!response.Success)
             {
                 return NotFound(response);
@@ -43,7 +34,7 @@ namespace Tripmate.API.Controllers
         public async Task<IActionResult> AddCountry([FromForm] SetCountryDto setCountryDto)
         {
 
-            var response = await _countryService.AddAsync(setCountryDto);
+            var response = await countryService.AddAsync(setCountryDto);
             if (!response.Success)
             {
                 return BadRequest(response);
@@ -54,7 +45,7 @@ namespace Tripmate.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCountry(int id, [FromForm] SetCountryDto countryDto)
         {
-            var response = await _countryService.Update(id, countryDto);
+            var response = await countryService.Update(id, countryDto);
             if (!response.Success)
             {
                 return BadRequest(response);
@@ -65,7 +56,7 @@ namespace Tripmate.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCountry(int id)
         {
-            var response = await _countryService.Delete(id);
+            var response = await countryService.Delete(id);
             if (!response.Success)
             {
                 return NotFound(response);

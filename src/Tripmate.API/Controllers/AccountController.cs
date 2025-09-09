@@ -1,29 +1,22 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Tripmate.Application.Services.Identity.ForgotPassword.DTO;
 using Tripmate.Application.Services.Identity.Login.DTOs;
 using Tripmate.Application.Services.Identity.RefreshTokens.DTOs;
 using Tripmate.Application.Services.Identity.Register.DTOs;
 using Tripmate.Application.Services.Identity.ResetPassword.DTO;
 using Tripmate.Application.Services.Identity.VerifyEmail.DTOs;
-using Tripmate.Domain.Common.Response;
 using Tripmate.Domain.Services.Interfaces.Identity;
 
 namespace Tripmate.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController : ControllerBase
+    public class AccountController(IAuthService authService) : ControllerBase
     {
-        private readonly IAuthService _authService;
-        public AccountController(IAuthService authService)
-        {
-            _authService = authService;
-        }
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
-            var response = await _authService.RegisterAsync(registerDto);
+            var response = await authService.RegisterAsync(registerDto);
             if (!response.Success)
             {
                 return BadRequest(response);
@@ -34,7 +27,7 @@ namespace Tripmate.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var response = await _authService.LoginAsync(loginDto);
+            var response = await authService.LoginAsync(loginDto);
             if (!response.Success)
             {
                 return BadRequest(response);
@@ -52,7 +45,7 @@ namespace Tripmate.API.Controllers
         [HttpPost("VerifyEmail")]
         public async Task<IActionResult> VerifyEmail(VerifyEmailDto verifyEmailDto)
         {
-            var result = await _authService.VerifyEmail(verifyEmailDto);
+            var result = await authService.VerifyEmail(verifyEmailDto);
             if (!result.Success)
             {
                 return BadRequest(result);
@@ -74,7 +67,7 @@ namespace Tripmate.API.Controllers
             //}
 
 
-            var response = await _authService.RefreshTokenAsync(refreshTokenDto);
+            var response = await authService.RefreshTokenAsync(refreshTokenDto);
             if (!response.Success)
             {
                 return BadRequest(response);
@@ -103,7 +96,7 @@ namespace Tripmate.API.Controllers
         [HttpPost("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
         {
-            var result = await _authService.ForgotPasswordAsync(forgotPasswordDto);
+            var result = await authService.ForgotPasswordAsync(forgotPasswordDto);
             if (result.Errors!=null&&result.Errors.Any())
             {
                 return BadRequest(result);
@@ -113,7 +106,7 @@ namespace Tripmate.API.Controllers
         [HttpPost("ResetPassword")]
         public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
         {
-            var result = await _authService.ResetPasswordAsync(resetPasswordDto);
+            var result = await authService.ResetPasswordAsync(resetPasswordDto);
             if (result.Errors!=null&&result.Errors.Any())
             {
                 return BadRequest(result);

@@ -1,5 +1,4 @@
-﻿using FluentValidation.AspNetCore;
-using Tripmate.Application.Extension;
+﻿using Tripmate.Application.Extension;
 using Tripmate.Infrastructure.Extensions;
 
 namespace Tripmate.API.Helper

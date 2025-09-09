@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 using Tripmate.API.Middlewares;
 using Tripmate.Infrastructure.Data.Context;
 using Tripmate.Infrastructure.DbHelper.Seeding;

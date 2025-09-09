@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tripmate.Application.Services.Regions.DTOs;
+﻿using Tripmate.Application.Services.Regions.DTOs;
 using Tripmate.Domain.Common.Response;
 using Tripmate.Domain.Specification.Regions;
 
@@ -16,7 +11,7 @@ namespace Tripmate.Application.Services.Abstractions.Region
         Task<ApiResponse<RegionDto>> CreateRegionAsync(SetRegionDto regionDto);
         Task<ApiResponse<RegionDto>> UpdateRegionAsync(int id, SetRegionDto regionDto);
         Task<ApiResponse<bool>> DeleteRegionAsync(int id);
-        Task<ApiResponse<PaginationResponse<RegionDto>>> GetRegionsAsync(RegionParameters parameters);
+        Task<PaginationResponse<IEnumerable<RegionDto>>> GetRegionsAsync(RegionParameters parameters);
 
 
     }

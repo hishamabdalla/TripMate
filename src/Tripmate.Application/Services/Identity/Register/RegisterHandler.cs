@@ -1,13 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using Tripmate.Application.Services.Abstractions.Identity;
 using Tripmate.Application.Services.Identity.Register.DTOs;
 using Tripmate.Application.Services.Identity.VerifyEmail;
@@ -17,38 +10,32 @@ using Tripmate.Domain.Entities.Models;
 
 namespace Tripmate.Application.Services.Identity.Register
 {
-    public class RegisterHandler : IRegisterHandler
+    public class RegisterHandler(
+        UserManager<ApplicationUser> userManager,
+        IMemoryCache cache,
+        ITokenService tokenService,
+        IEmailHandler emailHandler)
+        : IRegisterHandler
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IMemoryCache _cache;
-        private readonly ITokenService _tokenService;
-        private readonly IEmailHandler _emailHandler;
         private const string PendingUsersCacheKey = "PendingUsers_";
-        public RegisterHandler(UserManager<ApplicationUser> userManager, IMemoryCache cache, ITokenService tokenService, IEmailHandler emailHandler)
-        {
-            _userManager = userManager;
-            _cache=cache;
-            _tokenService=tokenService;
-            _emailHandler=emailHandler;
-        }
-       
+
         public async Task<ApiResponse<string>> HandleRegisterAsync(RegisterDto registerDto)
         {
-            var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
+            var existingUser = await userManager.FindByEmailAsync(registerDto.Email);
             if (existingUser != null)
             {
                 return new ApiResponse<string>(false, 400, "User already exists .",
                     errors: new List<string>() { "Email is already registered" });
             }
 
-            var existingUserName = await _userManager.FindByNameAsync(registerDto.UserName);
+            var existingUserName = await userManager.FindByNameAsync(registerDto.UserName);
             if (existingUserName != null)
             {
                 return new ApiResponse<string>(false, 400, "Username already exists",
                     errors: new List<string>() { "Username is already taken" });
             }
 
-            if (_cache.TryGetValue($"{PendingUsersCacheKey}{registerDto.Email}", out PendingUserData existingPending))
+            if (cache.TryGetValue($"{PendingUsersCacheKey}{registerDto.Email}", out PendingUserData existingPending))
             {
                 var timeSinceLastRequest = DateTime.UtcNow-(existingPending.Expiration.AddHours(-24));
                 if (timeSinceLastRequest.TotalMinutes<5)
@@ -56,7 +43,7 @@ namespace Tripmate.Application.Services.Identity.Register
                     return new ApiResponse<string>(false, 400,
                     errors: new List<string>() { "Verification email already send,please wait 5 minutes before requesting another." });
                 }
-                _cache.Remove($"{PendingUsersCacheKey}{registerDto.Email}");
+                cache.Remove($"{PendingUsersCacheKey}{registerDto.Email}");
             }
             var pendingUser = new PendingUserData
             {
@@ -72,12 +59,12 @@ namespace Tripmate.Application.Services.Identity.Register
            
             try
             {
-                await _emailHandler.SendVerificationEmail(pendingUser.Email, pendingUser.VerificationCode);
+                await emailHandler.SendVerificationEmail(pendingUser.Email, pendingUser.VerificationCode);
                 var cacheOptions = new MemoryCacheEntryOptions()
                     .SetAbsoluteExpiration(pendingUser.Expiration)
                     .SetPriority(CacheItemPriority.Normal);
 
-                _cache.Set($"{PendingUsersCacheKey}{pendingUser.Email}", pendingUser, cacheOptions);
+                cache.Set($"{PendingUsersCacheKey}{pendingUser.Email}", pendingUser, cacheOptions);
                 return new ApiResponse<string>(true, 200, "Verification email sent",data: pendingUser.Email);
             }
             catch (Exception ex)
@@ -89,7 +76,7 @@ namespace Tripmate.Application.Services.Identity.Register
 
         public async Task<ApiResponse<string>> VerifyEmail(VerifyEmailDto verifyEmailDto)
         {
-            if (!_cache.TryGetValue($"{PendingUsersCacheKey}{verifyEmailDto.Email}", out PendingUserData pendingUser))
+            if (!cache.TryGetValue($"{PendingUsersCacheKey}{verifyEmailDto.Email}", out PendingUserData pendingUser))
             {
                 return new ApiResponse<string>(false, 400, "Invalid or expired verification request",
                     errors: new List<string>() { "Invalid or expired verification request" });
@@ -108,16 +95,16 @@ namespace Tripmate.Application.Services.Identity.Register
                 EmailConfirmed = true,
                 IsActive=true,
             };
-            var result = await _userManager.CreateAsync(user, pendingUser.Password);
+            var result = await userManager.CreateAsync(user, pendingUser.Password);
 
             if (!result.Succeeded)
             {
                 return new ApiResponse<string>(false, 400,
                     errors: new List<string>() { "User creation failed" });
             }
-            _cache.Remove($"{PendingUsersCacheKey}{verifyEmailDto.Email}");
+            cache.Remove($"{PendingUsersCacheKey}{verifyEmailDto.Email}");
             
-            var token = await _tokenService.GenerateTokenAsync(user);
+            var token = await tokenService.GenerateTokenAsync(user);
             return new ApiResponse<string>(true, 200, "Registration completed successfully");
 
         }

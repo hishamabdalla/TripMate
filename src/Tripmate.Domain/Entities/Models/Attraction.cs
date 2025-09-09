@@ -1,11 +1,4 @@
-﻿using System;
-using System.Buffers.Text;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tripmate.Domain.Entities.Base;
+﻿using Tripmate.Domain.Entities.Base;
 using Tripmate.Domain.Enums;
 
 namespace Tripmate.Domain.Entities.Models
