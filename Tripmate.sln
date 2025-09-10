@@ -13,7 +13,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tripmate.Domain", "src\Trip
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tripmate.Infrastructure", "src\Tripmate.Infrastructure\Tripmate.Infrastructure.csproj", "{19EEF7D2-FC1B-1AF8-1C51-E0875AD4491E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tripmate.ApplicationTests", "src\Tripmate.ApplicationTests\Tripmate.ApplicationTests.csproj", "{3D169195-AA2E-4893-A0C4-75F29C41EAA1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{ABB101A0-7EE2-4C71-9C52-8A6CE7B12AAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tripmate.ApplicationTests", "test\Tripmate.ApplicationTests\Tripmate.ApplicationTests.csproj", "{9F52C8DD-EDB0-B517-368D-34F245BACFB7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,10 +39,10 @@ Global
 		{19EEF7D2-FC1B-1AF8-1C51-E0875AD4491E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19EEF7D2-FC1B-1AF8-1C51-E0875AD4491E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19EEF7D2-FC1B-1AF8-1C51-E0875AD4491E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3D169195-AA2E-4893-A0C4-75F29C41EAA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3D169195-AA2E-4893-A0C4-75F29C41EAA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3D169195-AA2E-4893-A0C4-75F29C41EAA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3D169195-AA2E-4893-A0C4-75F29C41EAA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F52C8DD-EDB0-B517-368D-34F245BACFB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F52C8DD-EDB0-B517-368D-34F245BACFB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F52C8DD-EDB0-B517-368D-34F245BACFB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F52C8DD-EDB0-B517-368D-34F245BACFB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,6 +52,7 @@ Global
 		{B6F04323-7B89-2C13-5F91-ABB75EF8DB31} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{7E79A1A8-E92E-C98B-E649-F0C54AB9743C} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{19EEF7D2-FC1B-1AF8-1C51-E0875AD4491E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{9F52C8DD-EDB0-B517-368D-34F245BACFB7} = {ABB101A0-7EE2-4C71-9C52-8A6CE7B12AAC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0ECCB568-8F28-419C-B75E-E033367E5A72}
