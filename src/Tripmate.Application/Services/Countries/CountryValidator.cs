@@ -11,10 +11,11 @@ namespace Tripmate.Application.Services.Countries
         public CountryValidator()
         {
             RuleFor(country => country.Name)
-                .NotEmpty().WithMessage("Country name is required.")
+                .NotEmpty().WithMessage(errorMessage: "Country name is required.")
                 .MaximumLength(50).WithMessage("Country name must not exceed 50 characters.");
             
             RuleFor(country=>country.Description)
+                 .NotEmpty().WithMessage(errorMessage: "Country Description is required.")
                 .MaximumLength(500).WithMessage("Country description must not exceed 500 characters.");
 
             RuleFor(country => country.ImageUrl).Cascade(CascadeMode.Stop)
