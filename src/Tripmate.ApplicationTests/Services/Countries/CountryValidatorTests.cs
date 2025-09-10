@@ -1,11 +1,11 @@
-﻿using Xunit;
-using Tripmate.Application.Services.Countries.DTOs;
+﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using FluentAssertions;
-using System.IO;
+using Tripmate.Application.Services.Countries;
+using Tripmate.Application.Services.Countries.DTOs;
+using Xunit;
 
-namespace Tripmate.Application.Services.Countries.Tests
+namespace Tripmate.ApplicationTests.Services.Countries
 {
     public class CountryValidatorTests
     {
@@ -78,7 +78,7 @@ namespace Tripmate.Application.Services.Countries.Tests
         [InlineData("",0, "Country Description is required.")]
         [InlineData("a",550, "Country description must not exceed 500 characters.")]
 
-        public void SetCountryDto_WithInvalidDescription_ShouldFailValidation(string description,int descriptionLength, string expectedMessage)
+        public void SetCountryDto_WithInvalidDescription_ShouldFailValidation(string? description,int descriptionLength, string expectedMessage)
         {
             // Arrange
             var mockFile = CreateMockFile("test.jpg", 1024 * 1024);
@@ -109,7 +109,7 @@ namespace Tripmate.Application.Services.Countries.Tests
         [InlineData("test.txt", 1024, "Image must be one of the following formats")]
         [InlineData("test.jpg", 5 * 1024 * 1024, "Image size must not exceed 2 MB")]
 
-        public void SetCountryDto_WithInvalidImage_ShouldFailValidation(string fileName, long size, string expectedMessage)
+        public void SetCountryDto_WithInvalidImage_ShouldFailValidation(string? fileName, long size, string expectedMessage)
         {
             // Arrange
             var mockFile = fileName== null ? null: CreateMockFile(fileName, size);
@@ -130,8 +130,6 @@ namespace Tripmate.Application.Services.Countries.Tests
         }
 
         #endregion
-
-
 
         #region Helper Methods
 
