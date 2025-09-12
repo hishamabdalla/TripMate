@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tripmate.Application.Services.Abstractions.Country;
 using Tripmate.Application.Services.Countries.DTOs;
+using Tripmate.Domain.Specification.Countries;
+using Tripmate.Domain.Specification.Regions;
 
 namespace Tripmate.API.Controllers
 {
@@ -8,10 +10,10 @@ namespace Tripmate.API.Controllers
     [ApiController]
     public class CountriesController(ICountryService countryService) : ControllerBase
     {
-        [HttpGet]
-        public async Task<IActionResult> GetAllCountries()
+        [HttpGet("GetCountries")]
+        public async Task<IActionResult> GetCountries([FromQuery] CountryParameters parameters)
         {
-            var response = await countryService.GetAllCountriesAsync();
+            var response = await countryService.GetCountriesAsync(parameters);
             if (!response.Success)
             {
                 return BadRequest(response);
