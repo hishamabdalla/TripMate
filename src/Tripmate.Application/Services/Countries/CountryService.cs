@@ -51,8 +51,6 @@ namespace Tripmate.Application.Services.Countries
                 StatusCode = 201 // Created
             };
         }
-
-        
         public async Task<PaginationResponse<IEnumerable<CountryDto>>> GetCountriesAsync(CountryParameters parameters)
         {
             if (parameters.PageNumber <= 0)
