@@ -3,11 +3,13 @@ using Microsoft.Extensions.Logging;
 using Tripmate.Application.Services.Abstractions.Country;
 using Tripmate.Application.Services.Countries.DTOs;
 using Tripmate.Application.Services.Image;
+using Tripmate.Application.Services.Regions.DTOs;
 using Tripmate.Domain.Common.Response;
 using Tripmate.Domain.Entities.Models;
 using Tripmate.Domain.Exceptions;
 using Tripmate.Domain.Interfaces;
 using Tripmate.Domain.Specification.Countries;
+using Tripmate.Domain.Specification.Regions;
 
 namespace Tripmate.Application.Services.Countries
 {
@@ -49,26 +51,29 @@ namespace Tripmate.Application.Services.Countries
                 StatusCode = 201 // Created
             };
         }
-
-        public async Task<ApiResponse<IEnumerable<CountryDto>>> GetAllCountriesAsync()
-
+        public async Task<PaginationResponse<IEnumerable<CountryDto>>> GetCountriesAsync(CountryParameters parameters)
         {
-            var spec= new CountrySpecification();
-            var countries = await unitOfWork.Repository<Country,int>().GetAllWithSpecAsync(spec);
+            if (parameters.PageNumber <= 0)
+                throw new BadRequestException("PageNumber must be greater than 0.");
+
+            if (parameters.PageSize <= 0)
+                throw new BadRequestException("PageSize must be greater than 0.");
+
+            var dataSpec = new CountrySpecification(parameters);
+            var countSpec = new CountriesForCountingSpecification(parameters);
+            var countries = await unitOfWork.Repository<Country, int>().GetAllWithSpecAsync(dataSpec);
+            var totalCount = await unitOfWork.Repository<Country, int>().CountAsync(countSpec);
+
             if (countries == null || !countries.Any())
             {
-                logger.LogWarning("No countries found.");
-                throw new NotFoundException("No countries found.");
-
+                logger.LogWarning("No countries found matching the provided criteria.");
+                throw new NotFoundException("No countries found matching the provided criteria.");
             }
-
             var countryDtos = mapper.Map<IEnumerable<CountryDto>>(countries);
-            logger.LogInformation("Retrieved {Count} countries.", countryDtos.Count());
 
-            return new ApiResponse<IEnumerable<CountryDto>>(true, 200, "Countries retrieved successfully.", countryDtos);
-
+            return new PaginationResponse<IEnumerable<CountryDto>>(countryDtos, totalCount, parameters.PageNumber,
+                parameters.PageSize);
         }
-
         public async Task<ApiResponse<CountryDto>> GetCountryByIdAsync(int id)
         {
             var country = await unitOfWork.Repository<Country, int>().GetByIdWithSpecAsync(new CountrySpecification(id));

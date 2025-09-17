@@ -2,12 +2,14 @@
 using Microsoft.Extensions.Logging;
 using Tripmate.Application.Services.Abstractions.Attraction;
 using Tripmate.Application.Services.Attractions.DTOs;
+using Tripmate.Application.Services.Countries.DTOs;
 using Tripmate.Application.Services.Image;
 using Tripmate.Domain.Common.Response;
 using Tripmate.Domain.Entities.Models;
 using Tripmate.Domain.Exceptions;
 using Tripmate.Domain.Interfaces;
 using Tripmate.Domain.Specification.Attractions;
+using Tripmate.Domain.Specification.Countries;
 
 namespace Tripmate.Application.Services.Attractions
 {
@@ -18,26 +20,29 @@ namespace Tripmate.Application.Services.Attractions
         IFileService fileService)
         : IAttractionService
     {
-        public async Task<ApiResponse<IEnumerable<AttractionDto>>>GetAllAttractionsAsync()
+       
+        public async Task<PaginationResponse<IEnumerable<AttractionDto>>> GetAttractionsAsync(AttractionParameter parameters)
         {
-            var attractions = await unitOfWork.Repository<Attraction, int>().GetAllWithSpecAsync(new AttractionSpecification());
-            if (attractions == null || !attractions.Any())
-            {
-                logger.LogWarning($"No attractions found in {nameof(GetAllAttractionsAsync)}.");
-                throw new NotFoundException("Attractions not found.");
+            if (parameters.PageNumber <= 0)
+                throw new BadRequestException("PageNumber must be greater than 0.");
 
+            if (parameters.PageSize <= 0)
+                throw new BadRequestException("PageSize must be greater than 0.");
+
+            var dataSpec = new AttractionSpecification(parameters);
+            var countSpec = new AttractionsForCountingSpecification(parameters);
+            var Attractions = await unitOfWork.Repository<Attraction, int>().GetAllWithSpecAsync(dataSpec);
+            var totalCount = await unitOfWork.Repository<Attraction, int>().CountAsync(countSpec);
+
+            if (Attractions == null || !Attractions.Any())
+            {
+                logger.LogWarning("No Attraction found matching the provided criteria.");
+                throw new NotFoundException("No Attraction found matching the provided criteria.");
             }
-            var attractionDtos = mapper.Map<IEnumerable<AttractionDto>>(attractions);
+            var AttractionsDtos  = mapper.Map<IEnumerable<AttractionDto>>(Attractions);
 
-         
-            return new ApiResponse<IEnumerable<AttractionDto>>(attractionDtos)
-            {
-                Success = true,
-                StatusCode = 200, // OK
-                Message = "Attractions retrieved successfully."
-            };
-
-
+            return new PaginationResponse<IEnumerable<AttractionDto>>(AttractionsDtos, totalCount, parameters.PageNumber,
+                parameters.PageSize);
         }
 
         public async Task<ApiResponse<AttractionDto>> GetAttractionByIdAsync(int id)

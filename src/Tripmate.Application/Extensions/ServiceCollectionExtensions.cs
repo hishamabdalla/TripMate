@@ -8,6 +8,7 @@ using Tripmate.Application.Services.Abstractions.Attraction;
 using Tripmate.Application.Services.Abstractions.Country;
 using Tripmate.Application.Services.Abstractions.Identity;
 using Tripmate.Application.Services.Abstractions.Region;
+using Tripmate.Application.Services.Abstractions.Restaurant;
 using Tripmate.Application.Services.Attractions;
 using Tripmate.Application.Services.Countries;
 using Tripmate.Application.Services.Countries.DTOs;
@@ -22,6 +23,7 @@ using Tripmate.Application.Services.Identity.Token;
 using Tripmate.Application.Services.Identity.VerifyEmail;
 using Tripmate.Application.Services.Image;
 using Tripmate.Application.Services.Regions;
+using Tripmate.Application.Services.Restaurants;
 using Tripmate.Domain.AppSettings;
 using Tripmate.Domain.Common.Response;
 using Tripmate.Domain.Services.Interfaces.Identity;
@@ -67,6 +69,7 @@ namespace Tripmate.Application.Extension
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IAttractionService, AttractionService>();
             services.AddScoped<IRegionService, RegionService>();
+            services.AddScoped<IRestaurantService,RestaurantServices>();
 
             // Register generic picture URL resolver factory as singleton since it's stateless
             services.AddHttpContextAccessor(); // Required for IHttpContextAccessor injection
