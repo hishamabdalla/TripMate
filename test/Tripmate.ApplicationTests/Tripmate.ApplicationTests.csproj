@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tripmate.Application\Tripmate.Application.csproj" />
+    <ProjectReference Include="..\..\src\Tripmate.Application\Tripmate.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
