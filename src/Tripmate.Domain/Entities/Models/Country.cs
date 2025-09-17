@@ -1,8 +1,9 @@
 ﻿using Tripmate.Domain.Entities.Base;
+using Tripmate.Domain.Interfaces;
 
 namespace Tripmate.Domain.Entities.Models
 {
-    public class Country :BaseEntity<int>
+    public class Country : BaseEntity<int>
     {
         public string Name { get; set; }
         public string Description { get; set; }

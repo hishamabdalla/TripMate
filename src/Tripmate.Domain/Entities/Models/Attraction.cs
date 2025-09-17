@@ -1,5 +1,6 @@
 ﻿using Tripmate.Domain.Entities.Base;
 using Tripmate.Domain.Enums;
+using Tripmate.Domain.Interfaces;
 
 namespace Tripmate.Domain.Entities.Models
 {

@@ -68,6 +68,9 @@ namespace Tripmate.Application.Extension
             services.AddScoped<IAttractionService, AttractionService>();
             services.AddScoped<IRegionService, RegionService>();
 
+            // Register generic picture URL resolver factory as singleton since it's stateless
+            services.AddHttpContextAccessor(); // Required for IHttpContextAccessor injection
+
             services.AddMemoryCache();
             return services;
         }
