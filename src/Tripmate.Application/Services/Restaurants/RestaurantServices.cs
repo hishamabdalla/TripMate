@@ -135,7 +135,7 @@ namespace Tripmate.Application.Services.Restaurants
                 {
                     _fileService.DeleteImage(existingRestaurant.ImageUrl, "Restaurants");
                 }
-                var imageUrl = await _fileService.UploadImageAsync(updateRestaurantDto.ImageUrl, "Restaurants");
+                 imagePath = await _fileService.UploadImageAsync(updateRestaurantDto.ImageUrl, "Restaurants");
             }
             _mapper.Map(updateRestaurantDto, existingRestaurant);
             if (imagePath != null)
@@ -158,6 +158,10 @@ namespace Tripmate.Application.Services.Restaurants
             {
                 _logger.LogWarning($"Restaurant with ID {id} not found for deletion.");
                 throw new NotFoundException($"Restaurant with ID {id} not found.");
+            }
+            if (!string.IsNullOrEmpty(restaurant.ImageUrl))
+            {
+                _fileService.DeleteImage(restaurant.ImageUrl, "Restaurants");
             }
             _unitOfWork.Repository<Restaurant, int>().Delete(restaurant);
             await _unitOfWork.SaveChangesAsync();
