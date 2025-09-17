@@ -43,14 +43,14 @@ namespace Tripmate.API.Controllers
         [HttpPost("CreateRestaurant")]
         public async Task<IActionResult> AddRestaurant([FromForm] AddRestaurantDto addRestaurantDto)
         {
-            var result = await _restaurantService.AddRestaurantAsync(addRestaurantDto, _webHostEnvironment.WebRootPath);
+            var result = await _restaurantService.AddRestaurantAsync(addRestaurantDto);
             return Ok(result);
         }
 
         [HttpPut("UpdateRestaurant")]
         public async Task<IActionResult> UpdateRestaurant([FromForm] UpdateRestaurantDto updateRestaurantDto)
         {
-            var result = await _restaurantService.UpdateRestaurantAsync(updateRestaurantDto, _webHostEnvironment.WebRootPath);
+            var result = await _restaurantService.UpdateRestaurantAsync(updateRestaurantDto);
             return Ok(result);
         }
 
