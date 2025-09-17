@@ -16,8 +16,8 @@ namespace Tripmate.Application.Services.Abstractions.Restaurant
         Task<PaginationResponse<IEnumerable<ReadRestaurantDto>>> GetRestaurantsAsync(RestaurantsParameters parameters);
         Task<ApiResponse<ReadRestaurantDto>> GetRestaurantByIdAsync(int id);
         Task<ApiResponse<IEnumerable<ReadRestaurantDto>>> GetRestaurantByRegionIdAsync(int regionId);
-        Task<ApiResponse<ReadRestaurantDto>> AddRestaurantAsync(AddRestaurantDto addRestaurantDto, string webRootPath);
-        Task<ApiResponse<ReadRestaurantDto>> UpdateRestaurantAsync(UpdateRestaurantDto updateRestaurantDto, string webRootPath);
+        Task<ApiResponse<ReadRestaurantDto>> AddRestaurantAsync(AddRestaurantDto addRestaurantDto);
+        Task<ApiResponse<ReadRestaurantDto>> UpdateRestaurantAsync(UpdateRestaurantDto updateRestaurantDto);
         Task<ApiResponse<bool>> DeleteRestaurant(int id);
     }
 }

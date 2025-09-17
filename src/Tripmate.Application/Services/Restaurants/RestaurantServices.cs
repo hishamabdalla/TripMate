@@ -25,12 +25,14 @@ namespace Tripmate.Application.Services.Restaurants
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<RestaurantServices> _logger;
+        private readonly IFileService _fileService;
 
-        public RestaurantServices(IUnitOfWork unitOfWork,IMapper mapper, ILogger<RestaurantServices> logger)
+        public RestaurantServices(IUnitOfWork unitOfWork,IMapper mapper, ILogger<RestaurantServices> logger, IFileService fileService)
         {
             _unitOfWork=unitOfWork;
             _mapper=mapper;
             _logger=logger;
+            _fileService=fileService;
         }
         public async Task<PaginationResponse<IEnumerable<ReadRestaurantDto>>> GetRestaurantsAsync(RestaurantsParameters parameters)
         {
@@ -89,9 +91,9 @@ namespace Tripmate.Application.Services.Restaurants
                 Message = "Restaurants retrieved successfully."
             };
         }
-        public async Task<ApiResponse<ReadRestaurantDto>> AddRestaurantAsync(AddRestaurantDto addRestaurantDto, string webRootPath)
+        public async Task<ApiResponse<ReadRestaurantDto>> AddRestaurantAsync(AddRestaurantDto addRestaurantDto)
         {
-            if(addRestaurantDto is null)
+            if (addRestaurantDto is null)
             {
                 _logger.LogError("Invalid Restaurant data provided");
                 throw new BadRequestException("Invalid Restaurant data provided");
@@ -99,7 +101,7 @@ namespace Tripmate.Application.Services.Restaurants
             string imagePath = null;
             if (addRestaurantDto.ImageUrl!=null&& addRestaurantDto.ImageUrl.Length>0)
             {
-                imagePath= await SaveImageAsync(addRestaurantDto.ImageUrl, webRootPath);
+                imagePath= await _fileService.UploadImageAsync(addRestaurantDto.ImageUrl, "Restaurants");
             }
             var restaurant = _mapper.Map<Restaurant>(addRestaurantDto);
             restaurant.ImageUrl=imagePath;
@@ -113,7 +115,7 @@ namespace Tripmate.Application.Services.Restaurants
                 Message = "Restaurant added successfully."
             };
         }
-        public async Task<ApiResponse<ReadRestaurantDto>> UpdateRestaurantAsync(UpdateRestaurantDto updateRestaurantDto, string webRootPath)
+        public async Task<ApiResponse<ReadRestaurantDto>> UpdateRestaurantAsync(UpdateRestaurantDto updateRestaurantDto)
         {
             if (updateRestaurantDto is null)
             {
@@ -129,10 +131,14 @@ namespace Tripmate.Application.Services.Restaurants
             string imagePath = null;
             if (updateRestaurantDto.ImageUrl != null && updateRestaurantDto.ImageUrl.Length > 0)
             {
-                imagePath = await SaveImageAsync(updateRestaurantDto.ImageUrl, webRootPath);
+                if (!string.IsNullOrEmpty(existingRestaurant.ImageUrl))
+                {
+                    _fileService.DeleteImage(existingRestaurant.ImageUrl, "Restaurants");
+                }
+                 imagePath = await _fileService.UploadImageAsync(updateRestaurantDto.ImageUrl, "Restaurants");
             }
             _mapper.Map(updateRestaurantDto, existingRestaurant);
-            if (imagePath != null)
+            if (!string.IsNullOrEmpty(imagePath))
             {
                 existingRestaurant.ImageUrl = imagePath;
             }
@@ -153,6 +159,10 @@ namespace Tripmate.Application.Services.Restaurants
                 _logger.LogWarning($"Restaurant with ID {id} not found for deletion.");
                 throw new NotFoundException($"Restaurant with ID {id} not found.");
             }
+            if (!string.IsNullOrEmpty(restaurant.ImageUrl))
+            {
+                _fileService.DeleteImage(restaurant.ImageUrl, "Restaurants");
+            }
             _unitOfWork.Repository<Restaurant, int>().Delete(restaurant);
             await _unitOfWork.SaveChangesAsync();
             _logger.LogInformation($"Restaurant with ID {id} deleted successfully.");
@@ -163,26 +173,5 @@ namespace Tripmate.Application.Services.Restaurants
                 Message = "Restaurant deleted successfully."
             };
         }
-        
-        private async Task<string> SaveImageAsync(IFormFile image, string webRootPath)
-        {
-            string uploadsFolder = Path.Combine(webRootPath, "Images", "Restaurants");
-
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-
-            string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(image.FileName);
-            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await image.CopyToAsync(stream);
-            }
-
-            return Path.Combine("Images", "Restaurants", uniqueFileName).Replace("\\", "/");
-        }
-
     }
 }
