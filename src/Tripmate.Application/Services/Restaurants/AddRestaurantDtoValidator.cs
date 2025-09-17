@@ -10,6 +10,9 @@ namespace Tripmate.Application.Services.Restaurants
 {
     public class AddRestaurantDtoValidator : AbstractValidator<AddRestaurantDto>
     {
+        private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png" };
+        private const long MaxSize = 2 * 1024 * 1024;
+
         public AddRestaurantDtoValidator()
         {
             RuleFor(x => x.Name)
@@ -32,9 +35,12 @@ namespace Tripmate.Application.Services.Restaurants
 
             RuleFor(x => x.ImageUrl)
                 .NotNull().WithMessage("Image is required.")
-                .Must(file => file.Length > 0).WithMessage("Image cannot be empty.")
-                .Must(file => file.ContentType.StartsWith("image/"))
-                .WithMessage("Only image files are allowed.");
+                .Must(file => file != null && file.Length > 0)
+                    .WithMessage("Image cannot be empty.")
+                .Must(file => file != null && _allowedExtensions.Contains(Path.GetExtension(file.FileName).ToLower()))
+                    .WithMessage($"Image must be one of the following formats: {string.Join(", ", _allowedExtensions)}")
+                .Must(file => file != null && file.Length <= MaxSize)
+                    .WithMessage($"Image size must not exceed {MaxSize / 1024 / 1024} MB");
         }
     }
 }
