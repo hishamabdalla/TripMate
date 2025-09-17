@@ -138,7 +138,7 @@ namespace Tripmate.Application.Services.Restaurants
                  imagePath = await _fileService.UploadImageAsync(updateRestaurantDto.ImageUrl, "Restaurants");
             }
             _mapper.Map(updateRestaurantDto, existingRestaurant);
-            if (imagePath != null)
+            if (!string.IsNullOrEmpty(imagePath))
             {
                 existingRestaurant.ImageUrl = imagePath;
             }

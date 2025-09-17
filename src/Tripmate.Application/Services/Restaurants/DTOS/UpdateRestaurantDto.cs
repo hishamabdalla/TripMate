@@ -13,7 +13,7 @@ namespace Tripmate.Application.Services.Restaurants.DTOS
         public string Name { get; set; }
         public int Rating { get; set; }
         public string Description { get; set; }
-        public IFormFile ImageUrl { get; set; }
+        public IFormFile? ImageUrl { get; set; }
         public string CuisineType { get; set; }
         public int RegionId { get; set; }
     }

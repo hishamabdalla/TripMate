@@ -16,7 +16,8 @@ namespace Tripmate.Application.Services.Restaurants.Mapping
             CreateMap<AddRestaurantDto,Restaurant >()
                 .ForMember(dest => dest.ImageUrl, opt => opt.Ignore());
             CreateMap<Restaurant, ReadRestaurantDto>().ReverseMap();
-            CreateMap<Restaurant, UpdateRestaurantDto>().ReverseMap();
+            CreateMap<Restaurant, UpdateRestaurantDto>().ReverseMap()
+                .ForMember(dest => dest.ImageUrl, opt => opt.Ignore());
 
         }
     }
