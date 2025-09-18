@@ -5,20 +5,20 @@ namespace Tripmate.API.Helper
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddAllServices(this IServiceCollection services,IConfiguration configuration)
+        public static IServiceCollection AddAllServices(this IServiceCollection services, IConfiguration configuration)
         {
 
             services.AddControllers();
-           
+
             // Add Swagger service
-            services.AddSwaggerService(); 
+            services.AddSwaggerService();
             // Add CORS policy
             services.AddCorsPolicy();
             // Add Application services
             services.AddApplicationServices(configuration);
             // Add Infrastructure services
             services.AddInfrastructureServices(configuration);
-            
+
             return services;
         }
 
@@ -44,7 +44,6 @@ namespace Tripmate.API.Helper
             });
             return services;
         }
-
 
     }
 }
