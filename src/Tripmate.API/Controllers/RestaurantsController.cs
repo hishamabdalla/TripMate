@@ -16,11 +16,9 @@ namespace Tripmate.API.Controllers
     public class RestaurantsController : ControllerBase
     {
         private readonly IRestaurantService _restaurantService;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-        public RestaurantsController(IRestaurantService restaurantService, IWebHostEnvironment webHostEnvironment)
+        public RestaurantsController(IRestaurantService restaurantService)
         {
             _restaurantService=restaurantService;
-            _webHostEnvironment=webHostEnvironment;
         }
         [HttpGet("GetRestaurants")]
         public async Task<IActionResult> GetRestaurants([FromQuery] RestaurantsParameters parameter)

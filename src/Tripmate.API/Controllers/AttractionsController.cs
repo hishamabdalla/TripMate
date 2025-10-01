@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Tripmate.API.Attributes;
 using Tripmate.Application.Services.Abstractions.Attraction;
 using Tripmate.Application.Services.Attractions.DTOs;
 using Tripmate.Domain.Specification.Attractions;
@@ -10,6 +11,7 @@ namespace Tripmate.API.Controllers
     public class AttractionsController(IAttractionService attractionService) : ControllerBase
     {
         [HttpGet("GetAtrractions")]
+        [Cached(1)]
         public async Task<IActionResult> GetAtrractions([FromQuery] AttractionParameter parameter)
         {
             var result = await attractionService.GetAttractionsAsync(parameter);

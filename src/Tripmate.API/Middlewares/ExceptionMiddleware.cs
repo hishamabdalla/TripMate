@@ -37,6 +37,7 @@ namespace Tripmate.API.Middlewares
             context.Response.Clear();
             context.Response.StatusCode = statusCode;
             context.Response.ContentType = "application/json";
+            
 
             var response = new ApiResponse<string>(
                 success: false,

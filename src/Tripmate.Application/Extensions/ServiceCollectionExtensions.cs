@@ -3,6 +3,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 using System.Reflection;
 using Tripmate.Application.Services.Abstractions.Attraction;
 using Tripmate.Application.Services.Abstractions.Country;
@@ -10,6 +11,7 @@ using Tripmate.Application.Services.Abstractions.Identity;
 using Tripmate.Application.Services.Abstractions.Region;
 using Tripmate.Application.Services.Abstractions.Restaurant;
 using Tripmate.Application.Services.Attractions;
+using Tripmate.Application.Services.Caching;
 using Tripmate.Application.Services.Countries;
 using Tripmate.Application.Services.Countries.DTOs;
 using Tripmate.Application.Services.Identity;
@@ -48,7 +50,9 @@ namespace Tripmate.Application.Extension
 
             // Register AutoMapper
             services.AddAutoMapperServices();
-            
+
+            // Register CacheService
+            services.AddCacheService(configuration);
 
             // Register FluentValidation
             return services;
@@ -69,7 +73,8 @@ namespace Tripmate.Application.Extension
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IAttractionService, AttractionService>();
             services.AddScoped<IRegionService, RegionService>();
-            services.AddScoped<IRestaurantService,RestaurantServices>();
+            services.AddScoped<IRestaurantService, RestaurantServices>();
+            services.AddScoped<ICacheService, CacheService>();
 
             // Register generic picture URL resolver factory as singleton since it's stateless
             services.AddHttpContextAccessor(); // Required for IHttpContextAccessor injection
@@ -125,6 +130,17 @@ namespace Tripmate.Application.Extension
                 .AddFluentValidationAutoValidation();
 
 
+        }
+
+        private static void AddCacheService(this IServiceCollection services, IConfiguration configuration)
+        {
+            // Register CacheService and its dependencies here
+
+            services.AddSingleton<IConnectionMultiplexer>(servicesProvider =>
+            {
+                var configurationOptions = configuration.GetConnectionString("Redis");
+                return ConnectionMultiplexer.Connect(configurationOptions);
+            });
         }
     }
 }

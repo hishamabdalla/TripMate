@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Tripmate.API.Attributes;
 using Tripmate.Application.Services.Abstractions.Region;
 using Tripmate.Application.Services.Regions.DTOs;
 using Tripmate.Domain.Specification.Regions;
@@ -11,6 +12,7 @@ namespace Tripmate.API.Controllers
     {
 
         [HttpGet("County/{countryId}/")]
+        [Cached(1)]
         public async Task<IActionResult> GetAllRegionsForCountry(int countryId)
         {
             var result = await regionService.GetAllRegionForCountryAsync(countryId);
