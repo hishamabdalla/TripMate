@@ -7,6 +7,7 @@ using StackExchange.Redis;
 using System.Reflection;
 using Tripmate.Application.Services.Abstractions.Attraction;
 using Tripmate.Application.Services.Abstractions.Country;
+using Tripmate.Application.Services.Abstractions.Hotel;
 using Tripmate.Application.Services.Abstractions.Identity;
 using Tripmate.Application.Services.Abstractions.Region;
 using Tripmate.Application.Services.Abstractions.Restaurant;
@@ -14,6 +15,7 @@ using Tripmate.Application.Services.Attractions;
 using Tripmate.Application.Services.Caching;
 using Tripmate.Application.Services.Countries;
 using Tripmate.Application.Services.Countries.DTOs;
+using Tripmate.Application.Services.Hotels;
 using Tripmate.Application.Services.Identity;
 using Tripmate.Application.Services.Identity.ForgotPassword;
 using Tripmate.Application.Services.Identity.Login;
@@ -75,6 +77,7 @@ namespace Tripmate.Application.Extension
             services.AddScoped<IRegionService, RegionService>();
             services.AddScoped<IRestaurantService, RestaurantServices>();
             services.AddScoped<ICacheService, CacheService>();
+            services.AddScoped<IHotelServices, HotelServices>();
 
             // Register generic picture URL resolver factory as singleton since it's stateless
             services.AddHttpContextAccessor(); // Required for IHttpContextAccessor injection
