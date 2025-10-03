@@ -1,4 +1,5 @@
-﻿using Tripmate.Application.Extension;
+﻿using Serilog;
+using Tripmate.Application.Extension;
 using Tripmate.Infrastructure.Extensions;
 
 namespace Tripmate.API.Helper
@@ -29,7 +30,7 @@ namespace Tripmate.API.Helper
             services.AddSwaggerGen();
         }
 
-        public static IServiceCollection AddCorsPolicy(this IServiceCollection services)
+        private static IServiceCollection AddCorsPolicy(this IServiceCollection services)
         {
             // Add CORS policy
             services.AddCors(options =>
@@ -44,6 +45,24 @@ namespace Tripmate.API.Helper
             });
             return services;
         }
+
+        public static IHostBuilder AddSerilogService(this IHostBuilder host)
+        {
+            var config= new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(config)
+                .Enrich.FromLogContext()
+                .CreateLogger();
+
+            
+
+            return host.UseSerilog();
+
+        }
+
 
     }
 }

@@ -1,3 +1,4 @@
+using Serilog;
 using Tripmate.API.Helper;
 
 namespace Tripmate.API
@@ -10,12 +11,29 @@ namespace Tripmate.API
 
             // Add All Services
             builder.Services.AddAllServices(builder.Configuration);
+            builder.Host.AddSerilogService();
 
-            var app = builder.Build();
-            // Configure Middleware
-            await app.ConfigureMiddlewareServices();
 
-            app.Run();
-        }
+            try
+            {
+                Log.Information("Application Starting Up");
+                var app = builder.Build();
+                await app.ConfigureMiddlewareServices();
+                app.Run();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Application start-up failed");
+                return;
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
+
+
+
+
+            }
     }
 }
