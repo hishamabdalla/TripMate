@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Tripmate.API.Attributes;
 using Tripmate.Application.Services.Abstractions.Attraction;
 using Tripmate.Application.Services.Attractions.DTOs;
@@ -8,47 +9,71 @@ namespace Tripmate.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AttractionsController(IAttractionService attractionService) : ControllerBase
+    public class AttractionsController : ControllerBase
     {
+        private readonly IAttractionService _attractionService;
+        private readonly ILogger<AttractionsController> _logger;
+
+        public AttractionsController(IAttractionService attractionService, ILogger<AttractionsController> logger)
+        {
+            _attractionService = attractionService;
+            _logger = logger;
+        }
+
         [HttpGet("GetAtrractions")]
         [Cached(1)]
         public async Task<IActionResult> GetAtrractions([FromQuery] AttractionParameter parameter)
         {
-            var result = await attractionService.GetAttractionsAsync(parameter);
+            _logger.LogInformation("Getting attractions with parameters: {Parameter}", parameter);
 
+            var result = await _attractionService.GetAttractionsAsync(parameter);
+
+            _logger.LogInformation("Successfully retrieved {Count} attractions", result.Data?.Count() ?? 0);
             return Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAttractionById(int id)
         {
-            var result = await attractionService.GetAttractionByIdAsync(id);
+            _logger.LogInformation("Getting attraction by ID: {AttractionId}", id);
+
+            var result = await _attractionService.GetAttractionByIdAsync(id);
+
+            _logger.LogInformation("Successfully retrieved attraction with ID: {AttractionId}", id);
             return Ok(result);
         }
 
         [HttpPost]
         public async Task<IActionResult> AddAttraction([FromForm] SetAttractionDto setAttractionDto)
         {
-            var result = await attractionService.AddAsync(setAttractionDto);
+            _logger.LogInformation("Adding new attraction: {AttractionName}", setAttractionDto.Name);
 
+            var result = await _attractionService.AddAsync(setAttractionDto);
+
+            _logger.LogInformation("Successfully added attraction: {AttractionName} with ID: {AttractionId}", setAttractionDto.Name, result.Data?.Id);
             return CreatedAtAction(nameof(GetAttractionById), new { id = result.Data.Id }, result);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAttraction(int id, [FromForm] SetAttractionDto setAttractionDto)
         {
+            _logger.LogInformation("Updating attraction with ID: {AttractionId}", id);
 
-            var result = await attractionService.UpdateAsync(id, setAttractionDto);
+            var result = await _attractionService.UpdateAsync(id, setAttractionDto);
+
+            _logger.LogInformation("Successfully updated attraction with ID: {AttractionId}", id);
             return Ok(result);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAttraction(int id)
         {
-            var result = await attractionService.Delete(id);
+            _logger.LogInformation("Deleting attraction with ID: {AttractionId}", id);
 
+            var result = await _attractionService.Delete(id);
+
+            _logger.LogInformation("Successfully deleted attraction with ID: {AttractionId}", id);
             return Ok(result);
-
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Tripmate.Application.Services.Identity.ForgotPassword.DTO;
 using Tripmate.Application.Services.Identity.Login.DTOs;
 using Tripmate.Application.Services.Identity.RefreshTokens.DTOs;
@@ -11,107 +13,164 @@ namespace Tripmate.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController(IAuthService authService) : ControllerBase
+    public class AccountController : ControllerBase
     {
+        private readonly IAuthService _authService;
+        private readonly ILogger<AccountController> _logger;
+
+        public AccountController(IAuthService authService, ILogger<AccountController> logger)
+        {
+            _authService = authService;
+            _logger = logger;
+        }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
-            var response = await authService.RegisterAsync(registerDto);
-            if (!response.Success)
+            _logger.LogInformation("Registration attempt for user: {Email}", registerDto.Email);
+            
+            var result = await _authService.RegisterAsync(registerDto);
+            
+            if (result.Success)
             {
-                return BadRequest(response);
+                _logger.LogInformation("Successful registration for user: {Email}", registerDto.Email);
+                return Ok(result);
+
 
             }
-            return Ok(response);
+            else
+            {
+                _logger.LogWarning("Failed registration attempt for user: {Email}. Reason: {Message}", 
+                    registerDto.Email, result.Message);
+
+                return BadRequest(result);
+            }
+            
+            
         }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var response = await authService.LoginAsync(loginDto);
-            if (!response.Success)
-            {
-                return BadRequest(response);
-            }
+            _logger.LogInformation("Login attempt for user: {Email}", loginDto.Email);
             
-            if(!string.IsNullOrEmpty(response.Data.RefreshToken))
-            {
-                SetRefreshTokenInCookie(response.Data.RefreshToken, response.Data.RefreshTokenExpiration);
-
-            }
-
-
-            return Ok(response);
-        }
-        [HttpPost("VerifyEmail")]
-        public async Task<IActionResult> VerifyEmail(VerifyEmailDto verifyEmailDto)
-        {
-            var result = await authService.VerifyEmail(verifyEmailDto);
+            var result = await _authService.LoginAsync(loginDto);
+            
             if (!result.Success)
             {
+                _logger.LogWarning("Failed login attempt for user: {Email}. Reason: {Message}", 
+                    loginDto.Email, result.Message);
                 return BadRequest(result);
             }
+           
+ 
+             if (!string.IsNullOrEmpty(result.Data?.RefreshToken))
+             {
+                SetRefreshTokenInCookie(result.Data.RefreshToken, result.Data.RefreshTokenExpiration);
+             }
+
+             _logger.LogInformation("Successful login for user: {Email}", loginDto.Email);
+                return Ok(result);
+
+        }
+
+        [HttpPost("verify-email")]
+        public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailDto verifyEmailDto)
+        {
+            _logger.LogInformation("Email verification attempt for user: {Email}", verifyEmailDto.Email);
+            
+            var result = await _authService.VerifyEmail(verifyEmailDto);
+            
+            if (!result.Success)
+            {
+                _logger.LogWarning("Failed email verification attempt for user: {Email}. Reason: {Message}", 
+                    verifyEmailDto.Email, result.Message);
+                return BadRequest(result);
+            }
+          
+
+            _logger.LogInformation("Successful email verification for user: {Email}", verifyEmailDto.Email);
             return Ok(result);
         }
 
-       
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
+        {
+            _logger.LogInformation("Forgot password request for user: {Email}", forgotPasswordDto.Email);
+            
+            var result = await _authService.ForgotPasswordAsync(forgotPasswordDto);
+
+            if (!result.Success)
+            {
+                _logger.LogWarning("Failed forgot password request for user: {Email}. Reason: {Message}",
+                    forgotPasswordDto.Email, result.Message);
+                return BadRequest(result);
+            }
+
+            _logger.LogInformation("Processed forgot password request for user: {Email}", forgotPasswordDto.Email);
+            return Ok(result);
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+        {
+            _logger.LogInformation("Password reset attempt for user: {Email}", resetPasswordDto.Email);
+            
+            var result = await _authService.ResetPasswordAsync(resetPasswordDto);
+            
+            if (!result.Success)
+            {
+
+                _logger.LogWarning("Failed password reset attempt for user: {Email}. Reason: {Message}", 
+                    resetPasswordDto.Email, result.Message);
+                return BadRequest(result);
+
+            }
+
+            _logger.LogInformation("Successful password reset for user: {Email}",resetPasswordDto.Email);
+            return Ok(result);
+
+
+
+        }
 
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken(RefreshTokenDto refreshTokenDto)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDto refreshTokenDto)
         {
-
-            //var refreshToken = Request.Cookies["refreshToken"];
+            _logger.LogInformation("Refresh token request initiated");
             
-            //if (string.IsNullOrEmpty(refreshToken))
-            //{
-            //    return BadRequest(new ApiResponse<TokenResponse>(false, 400, "Refresh token is missing"));
-            //}
-
-
-            var response = await authService.RefreshTokenAsync(refreshTokenDto);
-            if (!response.Success)
+            var result = await _authService.RefreshTokenAsync(refreshTokenDto);
+            
+            if (!result.Success)
             {
-                return BadRequest(response);
+                _logger.LogWarning("Failed refresh token request. Reason: {Message}", result.Message);
+                return BadRequest(result);
+
             }
-            // Set the new refresh token in the cookie
-            if (!string.IsNullOrEmpty(response.Data.RefreshToken))
+            
+            if (!string.IsNullOrEmpty(result.Data?.RefreshToken))
             {
-                SetRefreshTokenInCookie(response.Data.RefreshToken, response.Data.RefreshTokenExpiration);
+
+                SetRefreshTokenInCookie(result.Data.RefreshToken, result.Data.RefreshTokenExpiration);
+                _logger.LogInformation("Refresh token set in cookie successfully");
+
             }
-            return Ok(response);
+
+            _logger.LogInformation("Refresh token request processed successfully");
+
+            return Ok(result);
         }
+
         private void SetRefreshTokenInCookie(string refreshToken, DateTime expires)
         {
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-
                 Secure = true, // Set to true if using HTTPS
                 Expires = expires.ToLocalTime()
             };
 
             Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
-
-        }
-
-        [HttpPost("ForgotPassword")]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
-        {
-            var result = await authService.ForgotPasswordAsync(forgotPasswordDto);
-            if (result.Errors!=null&&result.Errors.Any())
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
-        }
-        [HttpPost("ResetPassword")]
-        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
-        {
-            var result = await authService.ResetPasswordAsync(resetPasswordDto);
-            if (result.Errors!=null&&result.Errors.Any())
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
         }
     }
 }

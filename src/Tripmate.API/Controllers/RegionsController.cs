@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Tripmate.API.Attributes;
 using Tripmate.Application.Services.Abstractions.Region;
 using Tripmate.Application.Services.Regions.DTOs;
@@ -8,52 +9,70 @@ namespace Tripmate.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RegionsController(IRegionService regionService) : ControllerBase
+    public class RegionsController : ControllerBase
     {
+        private readonly IRegionService _regionService;
+        private readonly ILogger<RegionsController> _logger;
+
+        public RegionsController(IRegionService regionService, ILogger<RegionsController> logger)
+        {
+            _regionService = regionService;
+            _logger = logger;
+        }
 
         [HttpGet("County/{countryId}/")]
         [Cached(1)]
         public async Task<IActionResult> GetAllRegionsForCountry(int countryId)
         {
-            var result = await regionService.GetAllRegionForCountryAsync(countryId);
+            _logger.LogInformation("Getting all regions for country ID: {CountryId}", countryId);
+            var result = await _regionService.GetAllRegionForCountryAsync(countryId);
+            _logger.LogInformation("Successfully retrieved regions for country ID: {CountryId}", countryId);
             return Ok(result);
         }
 
         [HttpGet("{regionId}")]
-
         public async Task<IActionResult> GetRegionByIdForCountry(int regionId)
         {
-            var result = await regionService.GetRegionByIdAsync(regionId);
+            _logger.LogInformation("Getting region by ID: {RegionId}", regionId);
+            var result = await _regionService.GetRegionByIdAsync(regionId);
+            _logger.LogInformation("Successfully retrieved region with ID: {RegionId}", regionId);
             return Ok(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddRegion([FromForm]SetRegionDto setRegionDto)
+        public async Task<IActionResult> AddRegion([FromForm] SetRegionDto setRegionDto)
         {
-            var result = await regionService.CreateRegionAsync(setRegionDto);
+            _logger.LogInformation("Adding new region: {RegionName} for country ID: {CountryId}", setRegionDto.Name, setRegionDto.CountryId);
+            var result = await _regionService.CreateRegionAsync(setRegionDto);
+            _logger.LogInformation("Successfully added region: {RegionName} with ID: {RegionId}", setRegionDto.Name, result.Data?.Id);
             return CreatedAtAction(nameof(GetRegionByIdForCountry), new { regionId = result.Data?.Id }, result);
         }
 
         [HttpPut("{regionId}")]
-        public async Task<IActionResult> UpdateRegion(int regionId, [FromForm]SetRegionDto setRegionDto)
+        public async Task<IActionResult> UpdateRegion(int regionId, [FromForm] SetRegionDto setRegionDto)
         {
-            var result = await regionService.UpdateRegionAsync(regionId, setRegionDto);
+            _logger.LogInformation("Updating region with ID: {RegionId}", regionId);
+            var result = await _regionService.UpdateRegionAsync(regionId, setRegionDto);
+            _logger.LogInformation("Successfully updated region with ID: {RegionId}", regionId);
             return Ok(result);
         }
 
         [HttpDelete("{regionId}")]
         public async Task<IActionResult> DeleteRegion(int regionId)
         {
-            var result = await regionService.DeleteRegionAsync(regionId);
+            _logger.LogInformation("Deleting region with ID: {RegionId}", regionId);
+            var result = await _regionService.DeleteRegionAsync(regionId);
+            _logger.LogInformation("Successfully deleted region with ID: {RegionId}", regionId);
             return Ok(result);
-
         }
+
         [HttpGet("GetAllRegions")]
         public async Task<IActionResult> GetAllRegions([FromQuery] RegionParameters parameters)
         {
-            var result = await regionService.GetRegionsAsync(parameters);
+            _logger.LogInformation("Getting all regions with parameters: PageNumber={PageNumber}, PageSize={PageSize}", parameters.PageNumber, parameters.PageSize);
+            var result = await _regionService.GetRegionsAsync(parameters);
+            _logger.LogInformation("Successfully retrieved {Count} regions", result.Data?.Count() ?? 0);
             return Ok(result);
         }
     }
-    
 }

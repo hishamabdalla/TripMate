@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Tripmate.API.Attributes;
 using Tripmate.Application.Services.Abstractions.Country;
 using Tripmate.Application.Services.Countries.DTOs;
@@ -9,64 +10,76 @@ namespace Tripmate.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CountriesController(ICountryService countryService) : ControllerBase
+    public class CountriesController : ControllerBase
     {
+        private readonly ICountryService _countryService;
+        private readonly ILogger<CountriesController> _logger;
+        
+        public CountriesController(ICountryService countryService, ILogger<CountriesController> logger)
+        {
+            _countryService = countryService;
+            _logger = logger;
+        }
+
         [HttpGet("GetCountries")]
         [Cached(1)]
         public async Task<IActionResult> GetCountries([FromQuery] CountryParameters parameters)
         {
-            var response = await countryService.GetCountriesAsync(parameters);
-            if (!response.Success)
-            {
-                return BadRequest(response);
-            }
+            _logger.LogInformation("Getting countries with parameters: PageNumber={PageNumber}, PageSize={PageSize}", 
+                parameters.PageNumber, parameters.PageSize);
+            
+            var response = await _countryService.GetCountriesAsync(parameters);
+            
+            _logger.LogInformation("Successfully retrieved {Count} countries", response.Data?.Count() ?? 0);
             return Ok(response);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCountryById(int id)
         {
-            var response = await countryService.GetCountryByIdAsync(id);
-            if (!response.Success)
-            {
-                return NotFound(response);
-            }
+            _logger.LogInformation("Getting country by ID: {CountryId}", id);
+            
+            var response = await _countryService.GetCountryByIdAsync(id);
+        
+            
+            _logger.LogInformation("Successfully retrieved country with ID: {CountryId}", id);
             return Ok(response);
         }
 
         [HttpPost]
         public async Task<IActionResult> AddCountry([FromForm] SetCountryDto setCountryDto)
         {
-
-            var response = await countryService.AddAsync(setCountryDto);
-            if (!response.Success)
-            {
-                return BadRequest(response);
-            }
+            _logger.LogInformation("Adding new country: {CountryName}", setCountryDto.Name);
+            
+            var response = await _countryService.AddAsync(setCountryDto);
+           
+            
+            _logger.LogInformation("Successfully added country: {CountryName} with ID: {CountryId}", 
+                setCountryDto.Name, response.Data?.Id);
             return CreatedAtAction(nameof(GetCountryById), new { id = response.Data.Id }, response);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCountry(int id, [FromForm] SetCountryDto countryDto)
         {
-            var response = await countryService.Update(id, countryDto);
-            if (!response.Success)
-            {
-                return BadRequest(response);
-            }
+            _logger.LogInformation("Updating country with ID: {CountryId}", id);
+            
+            var response = await _countryService.Update(id, countryDto);
+           
+            
+            _logger.LogInformation("Successfully updated country with ID: {CountryId}", id);
             return Ok(response);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCountry(int id)
         {
-            var response = await countryService.Delete(id);
-            if (!response.Success)
-            {
-                return NotFound(response);
-            }
+            _logger.LogInformation("Deleting country with ID: {CountryId}", id);
+            
+            var response = await _countryService.Delete(id);
+          
+            _logger.LogInformation("Successfully deleted country with ID: {CountryId}", id);
             return NoContent();
-
         }
     }
 }

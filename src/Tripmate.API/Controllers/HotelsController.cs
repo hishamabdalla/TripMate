@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Tripmate.Application.Services.Abstractions.Hotel;
 using Tripmate.Application.Services.Hotels.DTOS;
 using Tripmate.Application.Services.Restaurants.DTOS;
@@ -13,44 +14,79 @@ namespace Tripmate.API.Controllers
     public class HotelsController : ControllerBase
     {
         private readonly IHotelServices _hotelServices;
-        public HotelsController(IHotelServices hotelServices)
+        private readonly ILogger<HotelsController> _logger;
+        
+        public HotelsController(IHotelServices hotelServices, ILogger<HotelsController> logger)
         {
-            _hotelServices=hotelServices;
+            _hotelServices = hotelServices;
+            _logger = logger;
         }
+        
         [HttpGet("GetHotels")]
         public async Task<IActionResult> GetHotels([FromQuery] HotelsParameters parameter)
         {
+            _logger.LogInformation("Getting hotels with parameters: PageNumber={PageNumber}, PageSize={PageSize}", 
+                parameter.PageNumber, parameter.PageSize);
+            
             var hotels = await _hotelServices.GetHotelsAsync(parameter);
+            
+            _logger.LogInformation("Successfully retrieved {Count} hotels", hotels.Data?.Count() ?? 0);
             return Ok(hotels);
         }
+        
         [HttpGet("GetHotelById/{id}")]
         public async Task<IActionResult> GetHotelById(int id)
         {
+            _logger.LogInformation("Getting hotel by ID: {HotelId}", id);
+            
             var hotel = await _hotelServices.GetHotelByIdAsync(id);
+            
+            _logger.LogInformation("Successfully retrieved hotel with ID: {HotelId}", id);
             return Ok(hotel);
         }
+        
         [HttpGet("GetHotelsByRegionId")]
         public async Task<IActionResult> GetHotelsByRegionId(int id)
         {
+            _logger.LogInformation("Getting hotels by region ID: {RegionId}", id);
+            
             var result = await _hotelServices.GetHotelsByRegionIdAsync(id);
+            
+            _logger.LogInformation("Successfully retrieved hotels for region ID: {RegionId}", id);
             return Ok(result);
         }
+        
         [HttpPost("AddHotel")]
         public async Task<IActionResult> AddHotel([FromForm] AddHotelDto addHotelDto)
         {
+            _logger.LogInformation("Adding new hotel: {HotelName}", addHotelDto.Name);
+            
             var result = await _hotelServices.AddHotelAsync(addHotelDto);
+            
+            _logger.LogInformation("Successfully added hotel: {HotelName} with ID: {HotelId}", 
+                addHotelDto.Name, result.Data?.Id);
             return Ok(result);
         }
+        
         [HttpPut("UpdateHotel")]
         public async Task<IActionResult> UpdateHotel([FromForm] UpdateHotelDto updateHotelDto)
         {
+            _logger.LogInformation("Updating hotel with ID: {HotelId}", updateHotelDto.Id);
+            
             var result = await _hotelServices.UpdateHotelAsync(updateHotelDto);
+            
+            _logger.LogInformation("Successfully updated hotel with ID: {HotelId}", updateHotelDto.Id);
             return Ok(result);
         }
+        
         [HttpDelete("DeleteHotel")]
         public async Task<IActionResult> DeleteHotel(int id)
         {
+            _logger.LogInformation("Deleting hotel with ID: {HotelId}", id);
+            
             var result = await _hotelServices.DeleteHotel(id);
+            
+            _logger.LogInformation("Successfully deleted hotel with ID: {HotelId}", id);
             return Ok(result);
         }
     }
