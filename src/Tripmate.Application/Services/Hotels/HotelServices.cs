@@ -65,110 +65,149 @@ namespace Tripmate.Application.Services.Hotels
                 _logger.LogError($"Hotel with ID {id} not found.");
                 throw new NotFoundException($"Hotel with ID {id} not found.");
             }
-            var hotelDto=_mapper.Map<ReadHotelDto>(hotel);
+
+            var hotelDto = _mapper.Map<ReadHotelDto>(hotel);
+            _logger.LogInformation("Successfully retrieved hotel with ID: {HotelId}", id);
             return new ApiResponse<ReadHotelDto>(hotelDto)
             {
-                Success=true,
-                StatusCode=200,
-                Message="Hotel retrieved successfully"
+                Success = true,
+                StatusCode = 200,
+                Message = "Hotel retrieved successfully."
             };
         }
+
         public async Task<ApiResponse<IEnumerable<ReadHotelDto>>> GetHotelsByRegionIdAsync(int regionId)
         {
-            var hotelsSpecifications = new HotelsSpecification(regionId, true);
-            var hotel = await _unitOfWork.Repository<Hotel, int>().GetAllWithSpecAsync(hotelsSpecifications);
-            if (!hotel.Any())
+            _logger.LogInformation("Getting hotels by region ID: {RegionId}", regionId);
+            
+            var hotelSpecification = new HotelsSpecification(regionId, true);
+            var hotels = await _unitOfWork.Repository<Hotel, int>().GetAllWithSpecAsync(hotelSpecification);
+            
+            if (!hotels.Any())
             {
-                _logger.LogError($"No hotels found in region with ID {regionId}.");
+                _logger.LogWarning("No hotels found for region ID: {RegionId}", regionId);
                 throw new NotFoundException($"No hotels found in region with ID {regionId}.");
             }
-            var hotelsDto = _mapper.Map<IEnumerable<ReadHotelDto>>(hotel);
-            return new ApiResponse<IEnumerable<ReadHotelDto>>(hotelsDto)
+            
+            var hotelDtos = _mapper.Map<IEnumerable<ReadHotelDto>>(hotels);
+            _logger.LogInformation("Successfully retrieved {Count} hotels for region ID: {RegionId}", hotels.Count(), regionId);
+            
+            return new ApiResponse<IEnumerable<ReadHotelDto>>(hotelDtos)
             {
                 Success = true,
                 StatusCode = 200,
                 Message = "Hotels retrieved successfully."
             };
         }
+
         public async Task<ApiResponse<ReadHotelDto>> AddHotelAsync(AddHotelDto addHotelDto)
         {
+            _logger.LogInformation("Adding new hotel: {HotelName} in region: {RegionId}", addHotelDto.Name, addHotelDto.RegionId);
+            
             if (addHotelDto is null)
             {
-                _logger.LogError("Invalid hotel data provided");
+                _logger.LogError("Invalid hotel data provided for addition");
                 throw new BadRequestException("Invalid hotel data provided");
             }
+            
             string imagePath = null;
-            if (addHotelDto.ImageUrl!=null&& addHotelDto.ImageUrl.Length>0)
+            if (addHotelDto.ImageUrl != null && addHotelDto.ImageUrl.Length > 0)
             {
-                imagePath= await _fileService.UploadImageAsync(addHotelDto.ImageUrl, "Hotels");
+                _logger.LogDebug("Uploading image for hotel: {HotelName}", addHotelDto.Name);
+                imagePath = await _fileService.UploadImageAsync(addHotelDto.ImageUrl, "Hotels");
+                _logger.LogDebug("Image uploaded successfully: {ImagePath}", imagePath);
             }
+            
             var hotel = _mapper.Map<Hotel>(addHotelDto);
-            hotel.ImageUrl=imagePath;
+            hotel.ImageUrl = imagePath;
+            
             await _unitOfWork.Repository<Hotel, int>().AddAsync(hotel);
             await _unitOfWork.SaveChangesAsync();
+            
             var hotelDto = _mapper.Map<ReadHotelDto>(hotel);
+            _logger.LogInformation("Successfully added hotel: {HotelName} with ID: {HotelId}", addHotelDto.Name, hotel.Id);
+            
             return new ApiResponse<ReadHotelDto>(hotelDto)
             {
                 Success = true,
-                StatusCode = 200,
+                StatusCode = 201,
                 Message = "Hotel added successfully."
             };
-            
-          
         }
+
         public async Task<ApiResponse<ReadHotelDto>> UpdateHotelAsync(UpdateHotelDto updateHotelDto)
         {
-            if(updateHotelDto is null)
+            _logger.LogInformation("Updating hotel with ID: {HotelId}", updateHotelDto.Id);
+            
+            if (updateHotelDto is null)
             {
-                _logger.LogError("Invalid hotel data provided");
+                _logger.LogError("Invalid hotel data provided for update");
                 throw new BadRequestException("Invalid hotel data provided");
             }
-            var existingHotel = await _unitOfWork.Repository<Hotel,int>().GetByIdAsync(updateHotelDto.Id);
-            if(existingHotel is null)
+            
+            var existingHotel = await _unitOfWork.Repository<Hotel, int>().GetByIdAsync(updateHotelDto.Id);
+            if (existingHotel is null)
             {
-                _logger.LogWarning("Hotel not found for update.");
-                throw new NotFoundException("Hotel not found for update.");
+                _logger.LogWarning("Hotel not found for update with ID: {HotelId}", updateHotelDto.Id);
+                throw new NotFoundException("Hotel not found.");
             }
+            
             string imagePath = null;
             if (updateHotelDto.ImageUrl != null && updateHotelDto.ImageUrl.Length > 0)
             {
+                _logger.LogDebug("Updating image for hotel ID: {HotelId}", updateHotelDto.Id);
+                
                 if (!string.IsNullOrEmpty(existingHotel.ImageUrl))
                 {
                     _fileService.DeleteImage(existingHotel.ImageUrl, "Hotels");
+                    _logger.LogDebug("Deleted old image: {OldImagePath}", existingHotel.ImageUrl);
                 }
+                
                 imagePath = await _fileService.UploadImageAsync(updateHotelDto.ImageUrl, "Hotels");
+                _logger.LogDebug("New image uploaded: {ImagePath}", imagePath);
             }
+            
             _mapper.Map(updateHotelDto, existingHotel);
             if (!string.IsNullOrEmpty(imagePath))
             {
                 existingHotel.ImageUrl = imagePath;
             }
-           
-             await _unitOfWork.SaveChangesAsync();
+            
+            await _unitOfWork.SaveChangesAsync();
+            
             var hotelDto = _mapper.Map<ReadHotelDto>(existingHotel);
+            _logger.LogInformation("Successfully updated hotel with ID: {HotelId}", updateHotelDto.Id);
+            
             return new ApiResponse<ReadHotelDto>(hotelDto)
             {
                 Success = true,
                 StatusCode = 200,
                 Message = "Hotel updated successfully."
             };
-
         }
+
         public async Task<ApiResponse<bool>> DeleteHotel(int id)
         {
-            var existingHotel = await _unitOfWork.Repository<Hotel, int>().GetByIdAsync(id);
-            if (existingHotel is null)
+            _logger.LogInformation("Deleting hotel with ID: {HotelId}", id);
+            
+            var hotel = await _unitOfWork.Repository<Hotel, int>().GetByIdAsync(id);
+            if (hotel == null)
             {
-                _logger.LogWarning("Hotel not found for update.");
-                throw new NotFoundException("Hotel not found for update.");
+                _logger.LogWarning("Hotel not found for deletion with ID: {HotelId}", id);
+                throw new NotFoundException($"Hotel with ID {id} not found.");
             }
-            if (!string.IsNullOrEmpty(existingHotel.ImageUrl))
+            
+            if (!string.IsNullOrEmpty(hotel.ImageUrl))
             {
-                _fileService.DeleteImage(existingHotel.ImageUrl, "Hotels");
+                _fileService.DeleteImage(hotel.ImageUrl, "Hotels");
+                _logger.LogDebug("Deleted hotel image: {ImagePath}", hotel.ImageUrl);
             }
-            _unitOfWork.Repository<Hotel, int>().Delete(existingHotel);
+            
+            _unitOfWork.Repository<Hotel, int>().Delete(hotel);
             await _unitOfWork.SaveChangesAsync();
-            _logger.LogInformation($"Hotel with ID {id} deleted successfully.");
+            
+            _logger.LogInformation("Successfully deleted hotel with ID: {HotelId}", id);
+            
             return new ApiResponse<bool>(true)
             {
                 Success = true,

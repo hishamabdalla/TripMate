@@ -9,6 +9,7 @@ namespace Tripmate.Application.Services.Restaurants.DTOS
 {
     public class ReadRestaurantDto
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public int Rating { get; set; }
         public string Description { get; set; }

@@ -98,16 +98,28 @@ namespace Tripmate.Application.Services.Restaurants
                 _logger.LogError("Invalid Restaurant data provided");
                 throw new BadRequestException("Invalid Restaurant data provided");
             }
+            
+            _logger.LogInformation("Adding new restaurant: {RestaurantName} in region: {RegionId}", 
+                addRestaurantDto.Name, addRestaurantDto.RegionId);
+            
             string imagePath = null;
             if (addRestaurantDto.ImageUrl!=null&& addRestaurantDto.ImageUrl.Length>0)
             {
+                _logger.LogDebug("Uploading image for restaurant: {RestaurantName}", addRestaurantDto.Name);
                 imagePath= await _fileService.UploadImageAsync(addRestaurantDto.ImageUrl, "Restaurants");
+                _logger.LogDebug("Image uploaded successfully: {ImagePath}", imagePath);
             }
+            
             var restaurant = _mapper.Map<Restaurant>(addRestaurantDto);
             restaurant.ImageUrl=imagePath;
+            
             await _unitOfWork.Repository<Restaurant, int>().AddAsync(restaurant);
             await _unitOfWork.SaveChangesAsync();
+            
             var restaurantDto = _mapper.Map<ReadRestaurantDto>(restaurant);
+            _logger.LogInformation("Successfully added restaurant: {RestaurantName} with ID: {RestaurantId}", 
+                addRestaurantDto.Name, restaurant.Id);
+            
             return new ApiResponse<ReadRestaurantDto>(restaurantDto)
             {
                 Success = true,
@@ -115,6 +127,7 @@ namespace Tripmate.Application.Services.Restaurants
                 Message = "Restaurant added successfully."
             };
         }
+
         public async Task<ApiResponse<ReadRestaurantDto>> UpdateRestaurantAsync(UpdateRestaurantDto updateRestaurantDto)
         {
             if (updateRestaurantDto is null)
@@ -122,28 +135,42 @@ namespace Tripmate.Application.Services.Restaurants
                 _logger.LogError("Invalid Restaurant data provided");
                 throw new BadRequestException("Invalid Restaurant data provided");
             }
+            
+            _logger.LogInformation("Updating restaurant with ID: {RestaurantId}", updateRestaurantDto.Id);
+            
             var existingRestaurant = await _unitOfWork.Repository<Restaurant, int>().GetByIdAsync(updateRestaurantDto.Id);
             if (existingRestaurant is null)
             {
-                _logger.LogWarning("Restaurant not found for update.");
+                _logger.LogWarning("Restaurant not found for update with ID: {RestaurantId}", updateRestaurantDto.Id);
                 throw new NotFoundException("Restaurant not found.");
             }
+            
             string imagePath = null;
             if (updateRestaurantDto.ImageUrl != null && updateRestaurantDto.ImageUrl.Length > 0)
             {
+                _logger.LogDebug("Updating image for restaurant ID: {RestaurantId}", updateRestaurantDto.Id);
+                
                 if (!string.IsNullOrEmpty(existingRestaurant.ImageUrl))
                 {
                     _fileService.DeleteImage(existingRestaurant.ImageUrl, "Restaurants");
+                    _logger.LogDebug("Deleted old image: {OldImagePath}", existingRestaurant.ImageUrl);
                 }
-                 imagePath = await _fileService.UploadImageAsync(updateRestaurantDto.ImageUrl, "Restaurants");
+                
+                imagePath = await _fileService.UploadImageAsync(updateRestaurantDto.ImageUrl, "Restaurants");
+                _logger.LogDebug("New image uploaded: {ImagePath}", imagePath);
             }
+            
             _mapper.Map(updateRestaurantDto, existingRestaurant);
             if (!string.IsNullOrEmpty(imagePath))
             {
                 existingRestaurant.ImageUrl = imagePath;
             }
+            
             await _unitOfWork.SaveChangesAsync();
+            
             var restaurantDto = _mapper.Map<ReadRestaurantDto>(existingRestaurant);
+            _logger.LogInformation("Successfully updated restaurant with ID: {RestaurantId}", updateRestaurantDto.Id);
+            
             return new ApiResponse<ReadRestaurantDto>(restaurantDto)
             {
                 Success = true,
