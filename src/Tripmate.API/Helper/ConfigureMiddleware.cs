@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Tripmate.API.Middlewares;
 using Tripmate.Infrastructure.Data.Context;
 using Tripmate.Infrastructure.DbHelper.Seeding;
@@ -9,15 +10,20 @@ namespace Tripmate.API.Helper
     {
         public static async Task ConfigureMiddlewareServices(this WebApplication app)
         {
+            var logger = app.Services.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("Starting middleware configuration");
+
             // Apply migrations at startup
             app.ApplyMigrations();
 
-             await app.SeedData();
+            await app.SeedData();
 
             // Configure the HTTP request pipeline.
-           
-                app.UseSwagger();
-                app.UseSwaggerUI();
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
+            // Add request logging middleware
+            app.UseMiddleware<RequestLoggingMiddleware>();
 
             // Custom exception middleware
             app.UseMiddleware<ExceptionMiddleware>();
@@ -30,8 +36,9 @@ namespace Tripmate.API.Helper
             app.UseCors("AllowAllOrigins");
             app.UseStaticFiles();
 
-
+            logger.LogInformation("Middleware configuration completed");
         }
+        
         private static void ApplyMigrations(this WebApplication app)
         {
             using var scope = app.Services.CreateScope();
@@ -41,7 +48,8 @@ namespace Tripmate.API.Helper
             var pendingMigrations = context.Database.GetPendingMigrations();
             if (pendingMigrations.Any())
             {
-                logger.LogInformation("Applying migrations...");
+                logger.LogInformation("Applying {Count} pending migrations: {Migrations}", 
+                    pendingMigrations.Count(), string.Join(", ", pendingMigrations));
                 context.Database.Migrate();
                 logger.LogInformation("Migrations applied successfully.");
             }
@@ -53,15 +61,22 @@ namespace Tripmate.API.Helper
 
         private static async Task SeedData(this WebApplication app)
         {
-
-            using var scope=app.Services.CreateScope();
-
+            using var scope = app.Services.CreateScope();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
             var services = scope.ServiceProvider;
 
-            var seeder = services.GetRequiredService<ISeeder>();
-
-            await seeder.SeedAsync();
-
+            try
+            {
+                logger.LogInformation("Starting data seeding process");
+                var seeder = services.GetRequiredService<ISeeder>();
+                await seeder.SeedAsync();
+                logger.LogInformation("Data seeding completed successfully");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Data seeding failed");
+                throw;
+            }
         }
     }
 }
