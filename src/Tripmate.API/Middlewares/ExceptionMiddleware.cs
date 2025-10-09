@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 using Tripmate.Domain.Common.Response;
 using Tripmate.Domain.Exceptions;
 
@@ -11,6 +12,20 @@ namespace Tripmate.API.Middlewares
             try
             {
                 await next(context);
+            }
+            catch (RedisConnectionException redisException)
+            {
+                logger.LogError(redisException, "Redis connection failed at {Path}. Application should continue with fallback cache",
+                    context.Request.Path);
+                await HandleExceptionAsync(context, StatusCodes.Status503ServiceUnavailable,
+                    "Cache service temporarily unavailable, but the request can still be processed");
+            }
+            catch (RedisException redisException)
+            {
+                logger.LogError(redisException, "Redis operation failed at {Path}. Fallback mechanisms should handle this",
+                    context.Request.Path);
+                await HandleExceptionAsync(context, StatusCodes.Status500InternalServerError,
+                    "A caching error occurred, but the request should still be processed");
             }
             // Catch any unhandled exceptions and handle them
             catch (NotFoundException notFoundException)
