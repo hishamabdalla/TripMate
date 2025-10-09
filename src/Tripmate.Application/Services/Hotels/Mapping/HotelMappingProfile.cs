@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tripmate.Application.Services.Hotels.DTOS;
+using Tripmate.Application.Services.Image;
 using Tripmate.Domain.Entities.Models;
 
 namespace Tripmate.Application.Services.Hotels.Mapping
@@ -15,7 +16,9 @@ namespace Tripmate.Application.Services.Hotels.Mapping
         {
             CreateMap<AddHotelDto, Hotel>()
                 .ForMember(dest => dest.ImageUrl, opt => opt.Ignore());
-            CreateMap<Hotel, ReadHotelDto>().ReverseMap();
+            CreateMap<Hotel, ReadHotelDto>()
+                .ForMember(dest=>dest.ImageUrl,opt=>opt.MapFrom<HotelPictureUrlResolver>())
+                .ReverseMap();
             CreateMap<UpdateHotelDto, Hotel>().ReverseMap()
                 .ForMember(dest => dest.ImageUrl, opt => opt.Ignore());
         }

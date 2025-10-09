@@ -9,13 +9,16 @@ using Tripmate.Domain.Entities.Models;
 
 namespace Tripmate.Application.Services.Restaurants.Mapping
 {
-    public class RestaurantMappingProfile :Profile
+    public class RestaurantProfile :Profile
     {
-        public RestaurantMappingProfile()
+        public RestaurantProfile()
         {
             CreateMap<AddRestaurantDto,Restaurant >()
                 .ForMember(dest => dest.ImageUrl, opt => opt.Ignore());
-            CreateMap<Restaurant, ReadRestaurantDto>().ReverseMap();
+            CreateMap<Restaurant, ReadRestaurantDto>().
+                ForMember(dest=>dest.ImageUrl, opt => opt.MapFrom<RestuarantPictureUrlResolver>())
+
+                .ReverseMap();
             CreateMap<Restaurant, UpdateRestaurantDto>().ReverseMap()
                 .ForMember(dest => dest.ImageUrl, opt => opt.Ignore());
 

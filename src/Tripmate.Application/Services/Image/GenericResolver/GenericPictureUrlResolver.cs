@@ -1,9 +1,9 @@
-﻿using AutoMapper;
+﻿ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using System;
 using Tripmate.Domain.Interfaces;
 
-namespace Tripmate.Application.Services.Image
+namespace Tripmate.Application.Services.Image.PictureResolver
 {
     public class GenericPictureUrlResolver<TSource, TDestination > : IValueResolver<TSource, TDestination, string>
         where TSource : class, IHasImageUrl
@@ -11,7 +11,7 @@ namespace Tripmate.Application.Services.Image
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly string _imageFolderPath;
 
-        public GenericPictureUrlResolver(IHttpContextAccessor? httpContextAccessor = null, string? imageFolderPath = null )
+        public GenericPictureUrlResolver(IHttpContextAccessor httpContextAccessor, string imageFolderPath  )
         {
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
             _imageFolderPath = imageFolderPath ?? throw new ArgumentNullException(nameof(imageFolderPath));
