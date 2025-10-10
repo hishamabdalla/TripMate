@@ -102,14 +102,13 @@ namespace Tripmate.Application.Services.Hotels
 
         public async Task<ApiResponse<ReadHotelDto>> AddHotelAsync(AddHotelDto addHotelDto)
         {
-            _logger.LogInformation("Adding new hotel: {HotelName} in region: {RegionId}", addHotelDto.Name, addHotelDto.RegionId);
-            
             if (addHotelDto is null)
             {
                 _logger.LogError("Invalid hotel data provided for addition");
                 throw new BadRequestException("Invalid hotel data provided");
             }
-            
+            _logger.LogInformation("Adding new hotel: {HotelName} in region: {RegionId}", addHotelDto.Name, addHotelDto.RegionId);
+
             string imagePath = null;
             if (addHotelDto.ImageUrl != null && addHotelDto.ImageUrl.Length > 0)
             {
@@ -130,7 +129,7 @@ namespace Tripmate.Application.Services.Hotels
             return new ApiResponse<ReadHotelDto>(hotelDto)
             {
                 Success = true,
-                StatusCode = 201,
+                StatusCode = 200,
                 Message = "Hotel added successfully."
             };
         }

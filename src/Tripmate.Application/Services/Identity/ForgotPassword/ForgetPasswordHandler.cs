@@ -7,7 +7,7 @@ using Tripmate.Domain.Entities.Models;
 
 namespace Tripmate.Application.Services.Identity.ForgotPassword
 {
-    public class ForgetPasswordHandler
+    public class ForgetPasswordHandler:IForgetPasswordHandler
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IEmailHandler emailHandler;
