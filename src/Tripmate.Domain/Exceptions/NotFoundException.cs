@@ -5,7 +5,7 @@
         public NotFoundException(string message) : base(message)
         {
         }
-        public NotFoundException(string Entity, string id) : base(($"{Entity} With Id => {id} is not found"))
+        public NotFoundException(string Entity, string id) : base(($"{Entity} with ID {id}  not found"))
         {
 
         }

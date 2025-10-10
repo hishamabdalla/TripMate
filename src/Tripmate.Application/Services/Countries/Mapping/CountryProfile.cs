@@ -16,7 +16,9 @@ namespace Tripmate.Application.Services.Countries.Mapping
             CreateMap<Country, CountryDto>()
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom<CountryPictureUrlResolver>());
                 ;
-            CreateMap<SetCountryDto,Country>().ReverseMap();
+            CreateMap<SetCountryDto,Country>()
+                .ForMember(dest => dest.ImageUrl, opt => opt.Ignore())
+                .ReverseMap();
 
 
         }

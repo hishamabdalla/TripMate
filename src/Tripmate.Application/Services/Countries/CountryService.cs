@@ -66,7 +66,7 @@ namespace Tripmate.Application.Services.Countries
             var countries = await unitOfWork.Repository<Country, int>().GetAllWithSpecAsync(dataSpec);
             var totalCount = await unitOfWork.Repository<Country, int>().CountAsync(countSpec);
 
-            if (countries == null || !countries.Any())
+            if(!countries.Any())
             {
                 logger.LogWarning("No countries found matching the provided criteria.");
                 throw new NotFoundException("No countries found matching the provided criteria.");
@@ -125,10 +125,8 @@ namespace Tripmate.Application.Services.Countries
             
 
             // Map the other properties
-            existingCountry.Name = countryDto.Name;
-            existingCountry.Description = countryDto.Description;
+            mapper.Map(countryDto, existingCountry);
 
-            unitOfWork.Repository<Country, int>().Update(existingCountry);
             await unitOfWork.SaveChangesAsync();
 
             logger.LogInformation("Country with ID {Id} updated successfully.", id);
