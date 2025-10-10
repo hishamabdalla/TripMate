@@ -8,10 +8,15 @@ namespace Tripmate.Application.Services.Caching
 {
     public class CacheService : ICacheService
     {
-        private readonly IDatabase _database;
+        private readonly IDatabase? _database;
         private readonly IMemoryCache _memoryCache;
         private readonly ILogger<CacheService> _logger;
-        public readonly bool _redisIsAvailable;
+        private readonly bool _redisIsAvailable;
+
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
         public CacheService(IConnectionMultiplexer redis, ILogger<CacheService> logger, IMemoryCache memoryCache)
         {
 
@@ -23,7 +28,7 @@ namespace Tripmate.Application.Services.Caching
             {
                 if (_redisIsAvailable)
                 {
-                    _database = redis.GetDatabase();
+                    _database = redis!.GetDatabase();
                     _logger.LogInformation("Redis cache is available and will be used as primary cache");
                 }
                 else
@@ -43,32 +48,31 @@ namespace Tripmate.Application.Services.Caching
 
         public async Task<T?> GetAsync<T>(string key)
         {
+            ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
             if (!_redisIsAvailable)
             {
-              var isInMemoryCache = _memoryCache.TryGetValue(key, out T value);
+                var isInMemoryCache = _memoryCache.TryGetValue(key, out T? value);
                 if (isInMemoryCache)
                 {
-                    _logger.LogInformation("Data retrieved from in-memory cache.");
+                    _logger.LogDebug("Data retrieved from in-memory cache for key: {Key}", key);
                     return value;
                 }
-                _logger.LogWarning("Data not found in in-memory cache, will be fetched from the primary data source.");
-
+                _logger.LogDebug("Data not found in in-memory cache for key: {Key}", key);
                 return default;
-
             }
 
             try
             {
-                var jsonData = await _database.StringGetAsync(key);
+                var jsonData = await _database!.StringGetAsync(key);
                 if (jsonData.IsNullOrEmpty)
                 {
+                    _logger.LogDebug("Data not found in Redis cache for key: {Key}", key);
                     return default;
                 }
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                };
-                return JsonSerializer.Deserialize<T>(jsonData, options);
+                var result = JsonSerializer.Deserialize<T>(jsonData!, JsonOptions);
+                _logger.LogDebug("Data retrieved from Redis cache for key: {Key}", key);
+                return result;
             }
             catch (Exception ex)
             {
@@ -79,19 +83,18 @@ namespace Tripmate.Application.Services.Caching
             }
         }
 
-        
+
 
         public async Task SetAsync<T>(string key, T value, TimeSpan? expiration)
         {
+            ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
             if (value == null)
             {
+                _logger.LogWarning("Attempted to cache null value for key: {Key}", key);
                 return;
             }
 
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
             if (!_redisIsAvailable)
             {
                 _memoryCache.Set(key, value, expiration ?? TimeSpan.FromHours(1));
@@ -101,8 +104,8 @@ namespace Tripmate.Application.Services.Caching
 
             try
             {
-                var jsonData = JsonSerializer.Serialize(value, options);
-                await _database.StringSetAsync(key, jsonData, expiration ?? TimeSpan.FromHours(1));
+                var jsonData = JsonSerializer.Serialize(value, JsonOptions);
+                await _database!.StringSetAsync(key, jsonData, expiration ?? TimeSpan.FromHours(1));
                 _logger.LogDebug("Data cached in Redis for key: {Key}", key);
             }
             catch (Exception ex)
@@ -114,25 +117,25 @@ namespace Tripmate.Application.Services.Caching
         }
         public async Task RemoveAsync(string key)
         {
-           
+            ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
             if (!_redisIsAvailable)
             {
                 _memoryCache.Remove(key);
                 _logger.LogDebug("Data removed from in-memory cache for key: {Key}", key);
-                return ;
+                return;
             }
 
             try
             {
-                _database.KeyDelete(key);
+                await _database!.KeyDeleteAsync(key);
                 _logger.LogDebug("Data removed from Redis cache for key: {Key}", key);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error removing data from Redis cache for key: {Key}", key);
             }
-            return ;
-
         }
     }
 }
+     
