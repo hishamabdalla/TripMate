@@ -4,6 +4,7 @@ using Tripmate.Application.Services.Abstractions.Attraction;
 using Tripmate.Application.Services.Attractions.DTOs;
 using Tripmate.Application.Services.Countries.DTOs;
 using Tripmate.Application.Services.Image;
+using Tripmate.Application.Services.Image.ImagesFolders;
 using Tripmate.Domain.Common.Response;
 using Tripmate.Domain.Entities.Models;
 using Tripmate.Domain.Exceptions;
@@ -82,7 +83,7 @@ namespace Tripmate.Application.Services.Attractions
             }
             // Handle image upload
 
-            var imageUrl = await fileService.UploadImageAsync(setAttractionDto.ImageUrl, "Attractions");
+            var imageUrl = await fileService.UploadImageAsync(setAttractionDto.ImageUrl, FoldersNames.Attractions);
             attraction.ImageUrl = imageUrl;
 
             var Region = await unitOfWork.Repository<Region, int>().GetByIdAsync(setAttractionDto.RegionId);
@@ -130,10 +131,10 @@ namespace Tripmate.Application.Services.Attractions
                if (!string.IsNullOrEmpty(existingAttraction.ImageUrl))
                 {
                     // Delete the old image if it exists
-                     fileService.DeleteImage(existingAttraction.ImageUrl,"Attractions");
+                     fileService.DeleteImage(existingAttraction.ImageUrl,FoldersNames.Attractions);
                 }
                 // Handle image upload
-                var imageUrl = await fileService.UploadImageAsync(attractionDto.ImageUrl, "Attractions");
+                var imageUrl = await fileService.UploadImageAsync(attractionDto.ImageUrl, FoldersNames.Attractions);
 
                 existingAttraction.ImageUrl = imageUrl;
 

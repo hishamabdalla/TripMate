@@ -10,7 +10,7 @@ namespace Tripmate.Application.Services.Attractions.Mapping
         public AttractionProfile()
         {
             CreateMap<Attraction, AttractionDto>()
-                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom<AttractionImagesUrlResolver>())
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom<AttractionPictureUrlResolver>())
                 .ReverseMap();
 
 

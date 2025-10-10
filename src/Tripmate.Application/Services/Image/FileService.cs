@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
-using Tripmate.Application.Services.Image.enums;
+using Tripmate.Application.Services.Image.ImagesFolders;
 using Tripmate.Domain.Exceptions;
 
 namespace Tripmate.Application.Services.Image
@@ -22,8 +22,8 @@ namespace Tripmate.Application.Services.Image
 
         public async Task<string> UploadImageAsync(IFormFile imageFile, string? folderName)
         {
-            _logger.LogInformation("Starting image upload for folder: {Folder}, file: {FileName}, size: {FileSize} bytes", 
-                folderName, imageFile.FileName, imageFile.Length);
+            _logger.LogInformation("Starting image upload for folder: {Folder}, file: {FileName}, size: {FileSize} KB", 
+                folderName, imageFile.FileName, imageFile.Length/1024);
 
             if (imageFile == null)
             {
@@ -56,7 +56,7 @@ namespace Tripmate.Application.Services.Image
                 var imageName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
                 _logger.LogDebug("Generated unique filename: {FileName}", imageName);
 
-                var folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", folderName);
+                var folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", folderName??FoldersNames.Defualt);
 
                 if (!Directory.Exists(folderPath))
                 {
@@ -93,7 +93,7 @@ namespace Tripmate.Application.Services.Image
                 throw new ImageValidationException("Image URL cannot be null or empty.");
             }
 
-            var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", folderName, imageUrl);
+            var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", folderName ?? FoldersNames.Defualt, imageUrl);
             _logger.LogDebug("Full deletion path: {FullPath}", filePath);
 
             if (!File.Exists(filePath))

@@ -3,9 +3,11 @@ using Microsoft.Extensions.Logging;
 using Tripmate.Application.Services.Abstractions.Country;
 using Tripmate.Application.Services.Countries.DTOs;
 using Tripmate.Application.Services.Image;
+using Tripmate.Application.Services.Image.ImagesFolders;
 using Tripmate.Application.Services.Regions.DTOs;
 using Tripmate.Domain.Common.Response;
 using Tripmate.Domain.Entities.Models;
+using Tripmate.Domain.Enums;
 using Tripmate.Domain.Exceptions;
 using Tripmate.Domain.Interfaces;
 using Tripmate.Domain.Specification.Countries;
@@ -38,7 +40,7 @@ namespace Tripmate.Application.Services.Countries
 
             }
             // Handle image upload
-            var imageUrl = await fileService.UploadImageAsync(setCountryDto.ImageUrl, "Countries");
+            var imageUrl = await fileService.UploadImageAsync(setCountryDto.ImageUrl,FoldersNames.Countries);
             country.ImageUrl = imageUrl;
 
             await unitOfWork.Repository<Country, int>().AddAsync(country);
@@ -64,7 +66,7 @@ namespace Tripmate.Application.Services.Countries
             var countries = await unitOfWork.Repository<Country, int>().GetAllWithSpecAsync(dataSpec);
             var totalCount = await unitOfWork.Repository<Country, int>().CountAsync(countSpec);
 
-            if (countries == null || !countries.Any())
+            if(!countries.Any())
             {
                 logger.LogWarning("No countries found matching the provided criteria.");
                 throw new NotFoundException("No countries found matching the provided criteria.");
@@ -114,22 +116,17 @@ namespace Tripmate.Application.Services.Countries
             {
                 if (!string.IsNullOrEmpty(existingCountry.ImageUrl))
                 {
-                    fileService.DeleteImage(existingCountry.ImageUrl, "Countries");
+                    fileService.DeleteImage(existingCountry.ImageUrl,FoldersNames.Countries);
                 }
 
-                var newImageUrl = await fileService.UploadImageAsync(countryDto.ImageUrl, "Countries");
+                var newImageUrl = await fileService.UploadImageAsync(countryDto.ImageUrl, FoldersNames.Countries);
                 existingCountry.ImageUrl = newImageUrl;
             }
-            else
-            {
-                existingCountry.ImageUrl = existingCountry.ImageUrl;
-            }
+            
 
             // Map the other properties
-            existingCountry.Name = countryDto.Name;
-            existingCountry.Description = countryDto.Description;
+            mapper.Map(countryDto, existingCountry);
 
-            unitOfWork.Repository<Country, int>().Update(existingCountry);
             await unitOfWork.SaveChangesAsync();
 
             logger.LogInformation("Country with ID {Id} updated successfully.", id);

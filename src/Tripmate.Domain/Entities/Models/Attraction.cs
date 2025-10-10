@@ -4,7 +4,7 @@ using Tripmate.Domain.Interfaces;
 
 namespace Tripmate.Domain.Entities.Models
 {
-    public class Attraction : BaseEntity<int>
+    public class Attraction : BaseEntity<int>,IHasImageUrl
     {
         public string Name { get; set; }
         public string Description { get; set; }

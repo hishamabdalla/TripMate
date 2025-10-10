@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using System.Text.Json;
 
@@ -6,42 +8,134 @@ namespace Tripmate.Application.Services.Caching
 {
     public class CacheService : ICacheService
     {
-        private readonly IDatabase _database;
-        public CacheService(IConnectionMultiplexer redis)
+        private readonly IDatabase? _database;
+        private readonly IMemoryCache _memoryCache;
+        private readonly ILogger<CacheService> _logger;
+        private readonly bool _redisIsAvailable;
+
+        private static readonly JsonSerializerOptions JsonOptions = new()
         {
-           _database= redis.GetDatabase();
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+        public CacheService(IConnectionMultiplexer redis, ILogger<CacheService> logger, IMemoryCache memoryCache)
+        {
+
+            _memoryCache = memoryCache;
+            _logger = logger;
+            _redisIsAvailable = redis?.IsConnected ?? false;
+
+            try
+            {
+                if (_redisIsAvailable)
+                {
+                    _database = redis!.GetDatabase();
+                    _logger.LogInformation("Redis cache is available and will be used as primary cache");
+                }
+                else
+                {
+                    _logger.LogWarning("Redis is not connected. Falling back to in-memory cache.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error connecting to Redis. Falling back to in-memory cache.");
+                _redisIsAvailable = false;
+            }
         }
+
+
+
+
         public async Task<T?> GetAsync<T>(string key)
         {
-            var cacheResponse = await _database.StringGetAsync(key);
+            ArgumentException.ThrowIfNullOrWhiteSpace(key);
 
-            if (cacheResponse.IsNullOrEmpty) return default;
-            return JsonSerializer.Deserialize<T>(cacheResponse);
+            if (!_redisIsAvailable)
+            {
+                var isInMemoryCache = _memoryCache.TryGetValue(key, out T? value);
+                if (isInMemoryCache)
+                {
+                    _logger.LogDebug("Data retrieved from in-memory cache for key: {Key}", key);
+                    return value;
+                }
+                _logger.LogDebug("Data not found in in-memory cache for key: {Key}", key);
+                return default;
+            }
 
+            try
+            {
+                var jsonData = await _database!.StringGetAsync(key);
+                if (jsonData.IsNullOrEmpty)
+                {
+                    _logger.LogDebug("Data not found in Redis cache for key: {Key}", key);
+                    return default;
+                }
+                var result = JsonSerializer.Deserialize<T>(jsonData!, JsonOptions);
+                _logger.LogDebug("Data retrieved from Redis cache for key: {Key}", key);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving data from Redis cache.");
+                _logger.LogWarning("Data will be fetched from the primary data source.");
+                return default;
+
+            }
         }
 
-        
+
 
         public async Task SetAsync<T>(string key, T value, TimeSpan? expiration)
         {
+            ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
             if (value == null)
             {
+                _logger.LogWarning("Attempted to cache null value for key: {Key}", key);
                 return;
             }
 
-            var options = new JsonSerializerOptions
+            if (!_redisIsAvailable)
             {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
+                _memoryCache.Set(key, value, expiration ?? TimeSpan.FromHours(1));
+                _logger.LogDebug("Data cached in in-memory cache for key: {Key}", key);
+                return;
+            }
 
-            var jsonData = JsonSerializer.Serialize(value,options);
-            await _database.StringSetAsync(key, jsonData, expiration);
+            try
+            {
+                var jsonData = JsonSerializer.Serialize(value, JsonOptions);
+                await _database!.StringSetAsync(key, jsonData, expiration ?? TimeSpan.FromHours(1));
+                _logger.LogDebug("Data cached in Redis for key: {Key}", key);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error setting data in Redis cache for key: {Key}", key);
+            }
+            return;
+
         }
-        public Task RemoveAsync(string key)
+        public async Task RemoveAsync(string key)
         {
-            
-            return _database.KeyDeleteAsync(key);
+            ArgumentException.ThrowIfNullOrWhiteSpace(key);
 
+            if (!_redisIsAvailable)
+            {
+                _memoryCache.Remove(key);
+                _logger.LogDebug("Data removed from in-memory cache for key: {Key}", key);
+                return;
+            }
+
+            try
+            {
+                await _database!.KeyDeleteAsync(key);
+                _logger.LogDebug("Data removed from Redis cache for key: {Key}", key);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error removing data from Redis cache for key: {Key}", key);
+            }
         }
     }
 }
+     
