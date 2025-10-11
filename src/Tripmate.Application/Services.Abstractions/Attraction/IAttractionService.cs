@@ -10,8 +10,7 @@ namespace Tripmate.Application.Services.Abstractions.Attraction
         Task<ApiResponse<AttractionDto>> GetAttractionByIdAsync(int id);
         Task<ApiResponse<AttractionDto>> AddAsync(SetAttractionDto setAttractionDto);
         Task<ApiResponse<AttractionDto>> UpdateAsync(int id, SetAttractionDto attractionDto);
-        Task<ApiResponse<bool>> Delete(int id);
-        Task<ApiResponse<IEnumerable<AttractionDto>>> GetAttractionsByRegionIdAsync(int regionId);
-        Task<ApiResponse<IEnumerable<AttractionDto>>> GetAttractionsByTypeAsync(string type);
+        Task<ApiResponse<bool>> DeleteAsync(int id);
+       
     }
 }

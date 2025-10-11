@@ -3,6 +3,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using System.Reflection;
 using Tripmate.Application.Services.Abstractions.Attraction;
@@ -39,13 +40,14 @@ namespace Tripmate.Application.Extension
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddFluentValidation();
-            services.AddValiadiationErrorHandlingServices();
+           
             // Register application services here
             services.RegisterApplicationServices(configuration);
 
-            services.AddScoped<IValidator<RegisterDto>, RegisterDtoValidator>();
-            services.AddScoped<IValidator<SetCountryDto>, CountryValidator>();
+
+            // Register FluentValidation
+            services.AddFluentValidation();
+            services.AddValidationErrorHandlingServices();
 
             // Register options
             services.OptionsSetup(configuration);
@@ -79,17 +81,18 @@ namespace Tripmate.Application.Extension
             services.AddScoped<ICacheService, CacheService>();
             services.AddScoped<IHotelServices, HotelServices>();
 
-            // Register generic picture URL resolver factory as singleton since it's stateless
+
             services.AddHttpContextAccessor(); // Required for IHttpContextAccessor injection
 
             services.AddMemoryCache();
             return services;
         }
-        private static void OptionsSetup(this IServiceCollection services, IConfiguration configuration)
+        private static IServiceCollection OptionsSetup(this IServiceCollection services, IConfiguration configuration)
         {
             // Configure your application settings here
             services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
-
+            
+            return services;
 
         }
 
@@ -98,7 +101,7 @@ namespace Tripmate.Application.Extension
             var applicationsAssembly = Assembly.GetExecutingAssembly();
             services.AddAutoMapper(applicationsAssembly);
         }
-        private static void AddValiadiationErrorHandlingServices(this IServiceCollection services)
+        private static void AddValidationErrorHandlingServices(this IServiceCollection services)
         {
             services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -141,8 +144,18 @@ namespace Tripmate.Application.Extension
 
             services.AddSingleton<IConnectionMultiplexer>(servicesProvider =>
             {
-                var configurationOptions = configuration.GetConnectionString("Redis");
-                return ConnectionMultiplexer.Connect(configurationOptions);
+                try
+                {
+                    var redisConfiguration = configuration.GetSection("Redis")["Configuration"];
+                    return ConnectionMultiplexer.Connect(redisConfiguration);
+                }
+                catch (Exception ex)
+                {
+                    var logger = servicesProvider.GetRequiredService<ILogger<CacheService>>();
+                    logger.LogWarning( "Could not connect to Redis. Falling back to in-memory cache.");
+                    return null;
+                }
+
             });
         }
     }

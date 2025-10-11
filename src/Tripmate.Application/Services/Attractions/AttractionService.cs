@@ -35,10 +35,11 @@ namespace Tripmate.Application.Services.Attractions
             var Attractions = await unitOfWork.Repository<Attraction, int>().GetAllWithSpecAsync(dataSpec);
             var totalCount = await unitOfWork.Repository<Attraction, int>().CountAsync(countSpec);
 
-            if (Attractions == null || !Attractions.Any())
+            if (!Attractions.Any())
             {
-                logger.LogWarning("No Attraction found matching the provided criteria.");
-                throw new NotFoundException("No Attraction found matching the provided criteria.");
+                logger.LogInformation("No Attractions found.");
+                throw new NotFoundException("No Attractions found.");
+
             }
             var AttractionsDtos  = mapper.Map<IEnumerable<AttractionDto>>(Attractions);
 
@@ -81,10 +82,6 @@ namespace Tripmate.Application.Services.Attractions
                 logger.LogError("ImageUrl is required for adding an attraction.");
                 throw new BadRequestException("ImageUrl is required.");
             }
-            // Handle image upload
-
-            var imageUrl = await fileService.UploadImageAsync(setAttractionDto.ImageUrl, FoldersNames.Attractions);
-            attraction.ImageUrl = imageUrl;
 
             var Region = await unitOfWork.Repository<Region, int>().GetByIdAsync(setAttractionDto.RegionId);
             if (Region == null)
@@ -92,6 +89,13 @@ namespace Tripmate.Application.Services.Attractions
                 logger.LogError("Region with ID {RegionId} not found.", setAttractionDto.RegionId);
                 throw new NotFoundException($"Region with ID {setAttractionDto.RegionId} not found.");
             }
+
+            // Handle image upload
+
+            var imageUrl = await fileService.UploadImageAsync(setAttractionDto.ImageUrl, FoldersNames.Attractions);
+            attraction.ImageUrl = imageUrl;
+
+           
 
             
 
@@ -166,7 +170,7 @@ namespace Tripmate.Application.Services.Attractions
 
         }
 
-        public async Task<ApiResponse<bool>> Delete(int id)
+        public async Task<ApiResponse<bool>> DeleteAsync(int id)
         {
             var attraction = await unitOfWork.Repository<Attraction, int>().GetByIdAsync(id);
             if (attraction == null)
@@ -193,14 +197,6 @@ namespace Tripmate.Application.Services.Attractions
 
         }
 
-        public Task<ApiResponse<IEnumerable<AttractionDto>>> GetAttractionsByRegionIdAsync(int regionId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ApiResponse<IEnumerable<AttractionDto>>> GetAttractionsByTypeAsync(string type)
-        {
-            throw new NotImplementedException();
-        }
+     
     }
 }

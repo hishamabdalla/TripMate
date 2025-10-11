@@ -48,18 +48,17 @@ namespace Tripmate.ApplicationTests.Services.Hotels
         [Fact]
         public async Task AddHotel_AddHotelDtoIsNull_ThrowBadRequestException()
         {
-            //Arrange
-            AddHotelDto addHotel = null;
-            //Act
-
-            //Func<Task> action = () => _hotelService.AddHotelAsync(addHotel);
-            //var exception = await Record.ExceptionAsync(action);
-
-            var exception = await Record.ExceptionAsync(() => _hotelService.AddHotelAsync(addHotel));
-            //Assert
-            Assert.NotNull(exception);
+           
+            // Arrange
+            AddHotelDto addHotelDto = null;
+            // Act
+            var exception = await Record.ExceptionAsync(() => _hotelService.AddHotelAsync(addHotelDto));
+            // Assert
             Assert.IsType<BadRequestException>(exception);
+            Assert.NotNull(exception);
             Assert.Equal("Invalid hotel data provided", exception.Message);
+
+
         }
         [Fact]
         public async Task AddHotel_ValidHotel_ReturnApiResponse()

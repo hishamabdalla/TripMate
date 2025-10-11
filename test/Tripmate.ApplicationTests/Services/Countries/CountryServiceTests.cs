@@ -143,6 +143,7 @@ namespace Tripmate.Application.Services.Countries.Tests
             {
                 PageNumber = 1,
                 PageSize = 10,
+                Search = "Country1"
             };
             var countries = new List<Country>
             {
@@ -198,6 +199,7 @@ namespace Tripmate.Application.Services.Countries.Tests
             {
                 PageNumber = 1,
                 PageSize = 10,
+
             };
             var countries = new List<Country>();
 
