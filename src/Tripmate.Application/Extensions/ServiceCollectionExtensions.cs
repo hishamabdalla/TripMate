@@ -39,13 +39,14 @@ namespace Tripmate.Application.Extension
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddFluentValidation();
-            services.AddValiadiationErrorHandlingServices();
+           
             // Register application services here
             services.RegisterApplicationServices(configuration);
 
-            services.AddScoped<IValidator<RegisterDto>, RegisterDtoValidator>();
-            services.AddScoped<IValidator<SetCountryDto>, CountryValidator>();
+
+            // Register FluentValidation
+            services.AddFluentValidation();
+            services.AddValidationErrorHandlingServices();
 
             // Register options
             services.OptionsSetup(configuration);
@@ -79,17 +80,18 @@ namespace Tripmate.Application.Extension
             services.AddScoped<ICacheService, CacheService>();
             services.AddScoped<IHotelServices, HotelServices>();
 
-            // Register generic picture URL resolver factory as singleton since it's stateless
+
             services.AddHttpContextAccessor(); // Required for IHttpContextAccessor injection
 
             services.AddMemoryCache();
             return services;
         }
-        private static void OptionsSetup(this IServiceCollection services, IConfiguration configuration)
+        private static IServiceCollection OptionsSetup(this IServiceCollection services, IConfiguration configuration)
         {
             // Configure your application settings here
             services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
-
+            
+            return services;
 
         }
 
@@ -98,7 +100,7 @@ namespace Tripmate.Application.Extension
             var applicationsAssembly = Assembly.GetExecutingAssembly();
             services.AddAutoMapper(applicationsAssembly);
         }
-        private static void AddValiadiationErrorHandlingServices(this IServiceCollection services)
+        private static void AddValidationErrorHandlingServices(this IServiceCollection services)
         {
             services.Configure<ApiBehaviorOptions>(options =>
             {

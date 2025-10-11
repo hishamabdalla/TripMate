@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using FluentValidation.AspNetCore;
+using Serilog;
 using Tripmate.Application.Extension;
 using Tripmate.Infrastructure.Extensions;
 
@@ -9,8 +10,11 @@ namespace Tripmate.API.Helper
         public static IServiceCollection AddAllServices(this IServiceCollection services, IConfiguration configuration)
         {
 
-            services.AddControllers();
-
+            services.AddControllers(options =>
+            {
+                options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+            });
+           
             // Add Swagger service
             services.AddSwaggerService();
             // Add CORS policy
