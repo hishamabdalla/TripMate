@@ -70,7 +70,7 @@ namespace Tripmate.API.Controllers
         {
             _logger.LogInformation("Deleting attraction with ID: {AttractionId}", id);
 
-            var result = await _attractionService.Delete(id);
+            var result = await _attractionService.DeleteAsync(id);
 
             _logger.LogInformation("Successfully deleted attraction with ID: {AttractionId}", id);
             return Ok(result);

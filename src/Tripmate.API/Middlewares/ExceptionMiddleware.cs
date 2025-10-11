@@ -18,7 +18,7 @@ namespace Tripmate.API.Middlewares
                 logger.LogError(redisException, "Redis connection failed at {Path}. Application should continue with fallback cache",
                     context.Request.Path);
                 await HandleExceptionAsync(context, StatusCodes.Status503ServiceUnavailable,
-                    "Cache service temporarily unavailable, but the request can still be processed");
+                    "Redis connection failed");
             }
             catch (RedisException redisException)
             {
