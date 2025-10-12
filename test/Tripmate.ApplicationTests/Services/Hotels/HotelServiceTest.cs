@@ -15,6 +15,7 @@ using Tripmate.Domain.Common.Response;
 using Tripmate.Domain.Entities.Models;
 using Tripmate.Domain.Exceptions;
 using Tripmate.Domain.Interfaces;
+using Tripmate.Domain.Interfaces.Repositories.Intefaces;
 using Tripmate.Domain.Specification.Hotels;
 using Xunit;
 using Assert = Xunit.Assert;
@@ -117,6 +118,7 @@ namespace Tripmate.ApplicationTests.Services.Hotels
             Assert.Equal("path/to/image.jpg", result.Data.ImageUrl);
         }
         #endregion
+        #region GetHotelTest
 
         [Fact]
         public async Task GetHotel_PageNumberEqualZerro_throwBadRequestException()
@@ -128,7 +130,7 @@ namespace Tripmate.ApplicationTests.Services.Hotels
                 PageSize=5
             };
             // Act
-            var exception =await Record.ExceptionAsync(() => _hotelService.GetHotelsAsync(parameters));
+            var exception = await Record.ExceptionAsync(() => _hotelService.GetHotelsAsync(parameters));
             //Assert
             Assert.IsType<BadRequestException>(exception);
             Assert.NotNull(exception);
@@ -197,6 +199,51 @@ namespace Tripmate.ApplicationTests.Services.Hotels
             await Assert.ThrowsAsync<NotFoundException>(() => _hotelService.GetHotelsAsync(parameters));
 
         }
-       
+        #endregion
+        [Fact]
+        public async Task DeleteHotel_HotelExists_DeletesSuccessfully()
+        {
+            //Arrange
+            int hotelId = 1;
+            var hotel = new Hotel { Id=hotelId, ImageUrl="image.jpg"};
+            var hotelRepoMock = new Mock<IGenericRepository<Hotel, int>>();
+            hotelRepoMock.Setup(r => r.GetByIdAsync(hotelId)).ReturnsAsync(hotel);
+
+            _unitOfWorkMock.Setup(u => u.Repository<Hotel, int>()).Returns(hotelRepoMock.Object);
+            //Act
+            var result = await _hotelService.DeleteHotel(hotelId);
+            //Assert
+            _fileServiceMock.Verify(f => f.DeleteImage("image.jpg", "Hotels"), Times.Once);
+            hotelRepoMock.Verify(r => r.Delete(hotel), Times.Once);
+            _unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
+            Assert.True(result.Success);
+            Assert.True(result.Data);
+            Assert.Equal(200, result.StatusCode);
+            Assert.Equal("Hotel deleted successfully.", result.Message);
+
+        }
+
+        //public async Task<ApiResponse<bool>> DeleteHotel(int id)
+        //{
+        //    _logger.LogInformation("Deleting hotel with ID: {HotelId}", id);
+
+        //    var hotel = await _unitOfWork.Repository<Hotel, int>().GetByIdAsync(id);
+        //    if (hotel == null)
+        //    {
+        //        _logger.LogWarning("Hotel not found for deletion with ID: {HotelId}", id);
+        //        throw new NotFoundException($"Hotel with ID {id} not found.");
+        //    }
+
+        //    if (!string.IsNullOrEmpty(hotel.ImageUrl))
+        //    {
+        //        _fileService.DeleteImage(hotel.ImageUrl, "Hotels");
+        //        _logger.LogDebug("Deleted hotel image: {ImagePath}", hotel.ImageUrl);
+        //    }
+
+        //   
+
+        //   
+        //}
+
     }
 }
