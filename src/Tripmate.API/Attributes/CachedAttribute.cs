@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Text;
+using System.Text.Json;
 using Tripmate.Application.Services.Caching;
 
 namespace Tripmate.API.Attributes
@@ -24,7 +25,7 @@ namespace Tripmate.API.Attributes
             {
                 var contentResult = new ContentResult
                 {
-                    Content = cachedResponse.ToString(),
+                    Content = JsonSerializer.Serialize(cachedResponse),
                     ContentType = "application/json",
                     StatusCode = 200
                 };
