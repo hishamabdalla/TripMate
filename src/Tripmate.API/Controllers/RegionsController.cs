@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Tripmate.API.Attributes;
 using Tripmate.Application.Services.Abstractions.Region;
@@ -9,6 +10,7 @@ namespace Tripmate.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] // All endpoints require authentication
     public class RegionsController : ControllerBase
     {
         private readonly IRegionService _regionService;
@@ -22,6 +24,7 @@ namespace Tripmate.API.Controllers
 
         [HttpGet("County/{countryId}/")]
         [Cached(1)]
+        [AllowAnonymous] // Public endpoint - anyone can view regions
         public async Task<IActionResult> GetAllRegionsForCountry(int countryId)
         {
             _logger.LogInformation("Getting all regions for country ID: {CountryId}", countryId);
@@ -31,6 +34,7 @@ namespace Tripmate.API.Controllers
         }
 
         [HttpGet("{regionId}")]
+        [AllowAnonymous] // Public endpoint - anyone can view a region
         public async Task<IActionResult> GetRegionByIdForCountry(int regionId)
         {
             _logger.LogInformation("Getting region by ID: {RegionId}", regionId);
@@ -40,6 +44,7 @@ namespace Tripmate.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")] // Only Admin can add regions
         public async Task<IActionResult> AddRegion([FromForm] SetRegionDto setRegionDto)
         {
             _logger.LogInformation("Adding new region: {RegionName} for country ID: {CountryId}", setRegionDto.Name, setRegionDto.CountryId);
@@ -49,6 +54,7 @@ namespace Tripmate.API.Controllers
         }
 
         [HttpPut("{regionId}")]
+        [Authorize(Roles = "Admin")] // Only Admin can update regions
         public async Task<IActionResult> UpdateRegion(int regionId, [FromForm] SetRegionDto setRegionDto)
         {
             _logger.LogInformation("Updating region with ID: {RegionId}", regionId);
@@ -58,6 +64,7 @@ namespace Tripmate.API.Controllers
         }
 
         [HttpDelete("{regionId}")]
+        [Authorize(Roles = "Admin")] // Only Admin can delete regions
         public async Task<IActionResult> DeleteRegion(int regionId)
         {
             _logger.LogInformation("Deleting region with ID: {RegionId}", regionId);
@@ -67,6 +74,7 @@ namespace Tripmate.API.Controllers
         }
 
         [HttpGet("GetAllRegions")]
+        [AllowAnonymous] // Public endpoint - anyone can view all regions
         public async Task<IActionResult> GetAllRegions([FromQuery] RegionParameters parameters)
         {
             _logger.LogInformation("Getting all regions with parameters: PageNumber={PageNumber}, PageSize={PageSize}", parameters.PageNumber, parameters.PageSize);

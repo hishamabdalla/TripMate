@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Tripmate.API.Attributes;
 using Tripmate.Application.Services.Abstractions.Country;
@@ -10,6 +11,7 @@ namespace Tripmate.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] // All endpoints require authentication
     public class CountriesController : ControllerBase
     {
         private readonly ICountryService _countryService;
@@ -23,6 +25,7 @@ namespace Tripmate.API.Controllers
 
         [HttpGet("GetCountries")]
         [Cached(1)]
+        [AllowAnonymous] // Public endpoint - anyone can view countries
         public async Task<IActionResult> GetCountries([FromQuery] CountryParameters parameters)
         {
             _logger.LogInformation("Getting countries with parameters: PageNumber={PageNumber}, PageSize={PageSize}", 
@@ -35,6 +38,7 @@ namespace Tripmate.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous] // Public endpoint - anyone can view a country
         public async Task<IActionResult> GetCountryById(int id)
         {
             _logger.LogInformation("Getting country by ID: {CountryId}", id);
@@ -47,6 +51,7 @@ namespace Tripmate.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")] // Only Admin can add countries
         public async Task<IActionResult> AddCountry([FromForm] SetCountryDto setCountryDto)
         {
             _logger.LogInformation("Adding new country: {CountryName}", setCountryDto.Name);
@@ -60,6 +65,7 @@ namespace Tripmate.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")] // Only Admin can update countries
         public async Task<IActionResult> UpdateCountry(int id, [FromForm] SetCountryDto countryDto)
         {
             _logger.LogInformation("Updating country with ID: {CountryId}", id);
@@ -72,6 +78,7 @@ namespace Tripmate.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")] // Only Admin can delete countries
         public async Task<IActionResult> DeleteCountry(int id)
         {
             _logger.LogInformation("Deleting country with ID: {CountryId}", id);

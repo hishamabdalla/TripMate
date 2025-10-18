@@ -25,15 +25,17 @@ namespace Tripmate.API.Helper
             app.UseSwagger();
             app.UseSwaggerUI();
 
+            app.UseHttpsRedirection();
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             // Add request logging middleware
             app.UseMiddleware<RequestLoggingMiddleware>();
 
             // Custom exception middleware
             app.UseMiddleware<ExceptionMiddleware>();
 
-            app.UseHttpsRedirection(); 
-            app.UseAuthentication();
-            app.UseAuthorization();
+            
             app.MapControllers();
             // Enable CORS
             app.UseCors("AllowAllOrigins");

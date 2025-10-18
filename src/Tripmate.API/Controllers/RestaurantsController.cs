@@ -1,4 +1,5 @@
 ﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,7 @@ namespace Tripmate.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] // All endpoints require authentication
     public class RestaurantsController : ControllerBase
     {
         private readonly IRestaurantService _restaurantService;
@@ -26,6 +28,7 @@ namespace Tripmate.API.Controllers
         }
         
         [HttpGet("GetRestaurants")]
+        [AllowAnonymous] // Public endpoint - anyone can view restaurants
         public async Task<IActionResult> GetRestaurants([FromQuery] RestaurantsParameters parameter)
         {
             _logger.LogInformation("Getting restaurants with parameters: PageNumber={PageNumber}, PageSize={PageSize}", 
@@ -38,6 +41,7 @@ namespace Tripmate.API.Controllers
         }
         
         [HttpGet("GetRestaurantById/{id}")]
+        [AllowAnonymous] // Public endpoint - anyone can view a restaurant
         public async Task<IActionResult> GetRestaurantById(int id)
         {
             _logger.LogInformation("Getting restaurant by ID: {RestaurantId}", id);
@@ -49,6 +53,7 @@ namespace Tripmate.API.Controllers
         }
         
         [HttpGet("GetRestaurantByRegionId")]
+        [AllowAnonymous] // Public endpoint - anyone can view restaurants by region
         public async Task<IActionResult> GetRestaurantByRegionId(int id)
         {
             _logger.LogInformation("Getting restaurants by region ID: {RegionId}", id);
@@ -60,6 +65,7 @@ namespace Tripmate.API.Controllers
         }
         
         [HttpPost("CreateRestaurant")]
+        [Authorize(Roles = "Admin")] // Only Admin can add restaurants
         public async Task<IActionResult> AddRestaurant([FromForm] AddRestaurantDto addRestaurantDto)
         {
             _logger.LogInformation("Adding new restaurant: {RestaurantName}", addRestaurantDto.Name);
@@ -72,6 +78,7 @@ namespace Tripmate.API.Controllers
         }
 
         [HttpPut("UpdateRestaurant")]
+        [Authorize(Roles = "Admin")] // Only Admin can update restaurants
         public async Task<IActionResult> UpdateRestaurant([FromForm] UpdateRestaurantDto updateRestaurantDto)
         {
             _logger.LogInformation("Updating restaurant with ID: {RestaurantId}", updateRestaurantDto.Id);
@@ -83,6 +90,7 @@ namespace Tripmate.API.Controllers
         }
 
         [HttpDelete("DeleteRestaurant")]
+        [Authorize(Roles = "Admin")] // Only Admin can delete restaurants
         public async Task<IActionResult> DeleteRestaurant(int id)
         {
             _logger.LogInformation("Deleting restaurant with ID: {RestaurantId}", id);

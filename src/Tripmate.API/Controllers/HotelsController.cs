@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Tripmate.Application.Services.Abstractions.Hotel;
@@ -11,6 +12,7 @@ namespace Tripmate.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] // All endpoints require authentication
     public class HotelsController : ControllerBase
     {
         private readonly IHotelServices _hotelServices;
@@ -23,6 +25,7 @@ namespace Tripmate.API.Controllers
         }
         
         [HttpGet("GetHotels")]
+        [AllowAnonymous] // Public endpoint - anyone can view hotels
         public async Task<IActionResult> GetHotels([FromQuery] HotelsParameters parameter)
         {
             _logger.LogInformation("Getting hotels with parameters: PageNumber={PageNumber}, PageSize={PageSize}", 
@@ -35,6 +38,7 @@ namespace Tripmate.API.Controllers
         }
         
         [HttpGet("GetHotelById/{id}")]
+        [AllowAnonymous] // Public endpoint - anyone can view a hotel
         public async Task<IActionResult> GetHotelById(int id)
         {
             _logger.LogInformation("Getting hotel by ID: {HotelId}", id);
@@ -46,6 +50,7 @@ namespace Tripmate.API.Controllers
         }
         
         [HttpGet("GetHotelsByRegionId")]
+        [AllowAnonymous] // Public endpoint - anyone can view hotels by region
         public async Task<IActionResult> GetHotelsByRegionId(int id)
         {
             _logger.LogInformation("Getting hotels by region ID: {RegionId}", id);
@@ -57,6 +62,7 @@ namespace Tripmate.API.Controllers
         }
         
         [HttpPost("AddHotel")]
+        [Authorize(Roles = "Admin")] // Only Admin can add hotels
         public async Task<IActionResult> AddHotel([FromForm] AddHotelDto addHotelDto)
         {
             _logger.LogInformation("Adding new hotel: {HotelName}", addHotelDto.Name);
@@ -69,6 +75,7 @@ namespace Tripmate.API.Controllers
         }
         
         [HttpPut("UpdateHotel")]
+        [Authorize(Roles = "Admin")] // Only Admin can update hotels
         public async Task<IActionResult> UpdateHotel([FromForm] UpdateHotelDto updateHotelDto)
         {
             _logger.LogInformation("Updating hotel with ID: {HotelId}", updateHotelDto.Id);
@@ -80,6 +87,7 @@ namespace Tripmate.API.Controllers
         }
         
         [HttpDelete("DeleteHotel")]
+        [Authorize(Roles = "Admin")] // Only Admin can delete hotels
         public async Task<IActionResult> DeleteHotel(int id)
         {
             _logger.LogInformation("Deleting hotel with ID: {HotelId}", id);

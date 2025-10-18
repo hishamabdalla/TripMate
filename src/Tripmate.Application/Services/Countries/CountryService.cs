@@ -71,7 +71,7 @@ namespace Tripmate.Application.Services.Countries
                 logger.LogWarning("No countries found matching the provided criteria.");
                 throw new NotFoundException("No countries found matching the provided criteria.");
             }
-            var countryDtos = mapper.Map<IEnumerable<CountryDto>>(countries);
+            var countryDtos = mapper.Map<IEnumerable<CountryDto>>(countries).ToList();
 
             return new PaginationResponse<IEnumerable<CountryDto>>(countryDtos, totalCount, parameters.PageNumber,
                 parameters.PageSize);

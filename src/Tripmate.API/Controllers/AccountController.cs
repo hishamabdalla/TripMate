@@ -13,6 +13,7 @@ namespace Tripmate.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous] // All account endpoints are public - no authentication required
     public class AccountController : ControllerBase
     {
         private readonly IAuthService _authService;

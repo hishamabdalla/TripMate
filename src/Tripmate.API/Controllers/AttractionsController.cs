@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Tripmate.API.Attributes;
 using Tripmate.Application.Services.Abstractions.Attraction;
@@ -9,6 +10,7 @@ namespace Tripmate.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] // All endpoints require authentication
     public class AttractionsController : ControllerBase
     {
         private readonly IAttractionService _attractionService;
@@ -22,6 +24,7 @@ namespace Tripmate.API.Controllers
 
         [HttpGet("GetAtrractions")]
         [Cached(1)]
+        [AllowAnonymous] // Public endpoint - anyone can view attractions
         public async Task<IActionResult> GetAtrractions([FromQuery] AttractionParameter parameter)
         {
             _logger.LogInformation("Getting attractions with parameters: {Parameter}", parameter);
@@ -33,6 +36,7 @@ namespace Tripmate.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous] // Public endpoint - anyone can view an attraction
         public async Task<IActionResult> GetAttractionById(int id)
         {
             _logger.LogInformation("Getting attraction by ID: {AttractionId}", id);
@@ -44,6 +48,7 @@ namespace Tripmate.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")] // Only Admin can add attractions
         public async Task<IActionResult> AddAttraction([FromForm] SetAttractionDto setAttractionDto)
         {
             _logger.LogInformation("Adding new attraction: {AttractionName}", setAttractionDto.Name);
@@ -55,6 +60,7 @@ namespace Tripmate.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")] // Only Admin can update attractions
         public async Task<IActionResult> UpdateAttraction(int id, [FromForm] SetAttractionDto setAttractionDto)
         {
             _logger.LogInformation("Updating attraction with ID: {AttractionId}", id);
@@ -66,6 +72,7 @@ namespace Tripmate.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")] // Only Admin can delete attractions
         public async Task<IActionResult> DeleteAttraction(int id)
         {
             _logger.LogInformation("Deleting attraction with ID: {AttractionId}", id);
