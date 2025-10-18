@@ -21,4 +21,8 @@
     <PackageReference Include="StackExchange.Redis" Version="2.9.17" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Common\NewFolder\" />
+  </ItemGroup>
+
 </Project>
