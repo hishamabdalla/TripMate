@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -6,7 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Tripmate.Domain.AppSettings;
+using Tripmate.Domain.Common.Response;
 using Tripmate.Domain.Entities.Models;
+using Tripmate.Domain.Enums;
 using Tripmate.Domain.Interfaces;
 using Tripmate.Infrastructure.Data.Context;
 using Tripmate.Infrastructure.DbHelper.Seeding;
@@ -85,8 +88,22 @@ namespace Tripmate.Infrastructure.Extensions
             })
             .AddJwtBearer(options =>
             {
-                options.TokenValidationParameters = new TokenValidationParameters
+                
+                options.Events = new JwtBearerEvents
                 {
+                    OnChallenge = async context =>
+                    {
+                        context.HandleResponse();
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        context.Response.ContentType = "application/json";
+
+                        var response = new ApiResponse<string>(false, StatusCodes.Status401Unauthorized, "Unauthorized! Please log in.", null);
+
+                        await context.Response.WriteAsJsonAsync(response);
+                    }
+                };
+                 options.TokenValidationParameters = new TokenValidationParameters
+                     {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
@@ -101,7 +118,15 @@ namespace Tripmate.Infrastructure.Extensions
 
         private static void AddAuthorizationServices(this IServiceCollection services)
         {
-            
+            services.AddAuthorization(options =>
+            {
+                // Role-based policies
+                options.AddPolicy("AdminOnly", policy => policy.RequireRole(UserRoles.Admin));
+                options.AddPolicy("UserOnly", policy => policy.RequireRole(UserRoles.User));
+                options.AddPolicy("AdminOrUser", policy => policy.RequireRole(UserRoles.Admin, UserRoles.User));
+
+             
+            });
         }
 
 
