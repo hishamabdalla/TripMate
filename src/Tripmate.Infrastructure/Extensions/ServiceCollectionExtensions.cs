@@ -37,6 +37,8 @@ namespace Tripmate.Infrastructure.Extensions
 
             services.AddScoped<ISeeder, Seeder>();
 
+            services.Configure<AppUsersSettings>(configuration.GetSection("AppUsersSettings"));
+
             return services;
         }
 
@@ -101,6 +103,7 @@ namespace Tripmate.Infrastructure.Extensions
         {
             
         }
+
 
     }
 }

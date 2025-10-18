@@ -1,8 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Tripmate.API.Middlewares;
+using Tripmate.Domain.AppSettings;
 using Tripmate.Infrastructure.Data.Context;
 using Tripmate.Infrastructure.DbHelper.Seeding;
+using Tripmate.Infrastructure.DbHelper.Seeding.DataSeeder;
 
 namespace Tripmate.API.Helper
 {
@@ -65,12 +68,15 @@ namespace Tripmate.API.Helper
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
             var services = scope.ServiceProvider;
 
+            var options = services.GetRequiredService<IOptions<AppUsersSettings>>();
+
             try
             {
                 logger.LogInformation("Starting data seeding process");
                 var seeder = services.GetRequiredService<ISeeder>();
                 await seeder.SeedAsync();
                 logger.LogInformation("Data seeding completed successfully");
+                await IdentitySeeder.SeedRolesAndAdminAsync(services, options);
             }
             catch (Exception ex)
             {
