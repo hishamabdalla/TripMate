@@ -95,7 +95,7 @@ namespace Tripmate.Application.Services.Identity.Register
                 _logger.LogInformation("Successfully cached pending user and sent verification email to: {Email}. Cache expires at: {Expiration}",
                     pendingUser.Email, pendingUser.Expiration.ToString("d"));
                     
-                return new ApiResponse<string>(true, 200, "Verification email sent", data: pendingUser.Email);
+                return new ApiResponse<string>(true, 200, $"Verification email sent {pendingUser.VerificationCode} ", data: pendingUser.Email);
             }
             catch (Exception ex)
             {

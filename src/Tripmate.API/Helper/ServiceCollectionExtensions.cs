@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using System.Text.Json.Serialization;
 using Tripmate.Application.Extension;
 using Tripmate.Infrastructure.Extensions;
 
@@ -14,9 +15,15 @@ namespace Tripmate.API.Helper
 
             services.AddControllers(options =>
             {
+                //Do not Make non-nullable reference types required by default
                 options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+            }).AddJsonOptions(options =>
+            {
+                 //When User add string value instead of integer value for enum properties in json it will be handled properly
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
-           
+
+
             // Add Swagger service
             services.AddSwaggerService();
             // Add CORS policy

@@ -21,10 +21,10 @@ namespace Tripmate.Application.Services.Identity.Token
         {
             var claims = new List<Claim>
             {
-                new Claim("userName", user.UserName),
-                new Claim("userId", user.Id.ToString()),
-                new Claim("email", user.Email),
-
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Name, user.UserName ?? string.Empty),
+                new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+                    
                 // Add other claims as needed
             };
 
@@ -39,7 +39,7 @@ namespace Tripmate.Application.Services.Identity.Token
             var token = new JwtSecurityToken(
                 issuer: JwtSettings.Issuer,
                 audience: JwtSettings.Audience,
-                expires: DateTime.UtcNow.AddMinutes(JwtSettings.ExpirationHours),
+                expires: DateTime.UtcNow.AddHours(JwtSettings.ExpirationHours),
                 claims: claims,
                 signingCredentials:new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
 

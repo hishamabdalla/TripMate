@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tripmate.Infrastructure.Data.Context;
 
@@ -11,9 +12,11 @@ using Tripmate.Infrastructure.Data.Context;
 namespace Tripmate.Infrastructure.Migrations
 {
     [DbContext(typeof(TripmateDbContext))]
-    partial class TripmateDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251019150920_EditReview")]
+    partial class EditReview
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -440,8 +443,7 @@ namespace Tripmate.Infrastructure.Migrations
 
                     b.Property<string>("Comment")
                         .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -473,14 +475,9 @@ namespace Tripmate.Infrastructure.Migrations
 
                     b.HasIndex("RestaurantId");
 
-                    b.HasIndex("ReviewDate");
-
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reviews", t =>
-                        {
-                            t.HasCheckConstraint("CK_Review_OneEntityType", "([AttractionId] IS NOT NULL AND [RestaurantId] IS NULL AND [HotelId] IS NULL) OR ([AttractionId] IS NULL AND [RestaurantId] IS NOT NULL AND [HotelId] IS NULL) OR ([AttractionId] IS NULL AND [RestaurantId] IS NULL AND [HotelId] IS NOT NULL)");
-                        });
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -624,13 +621,11 @@ namespace Tripmate.Infrastructure.Migrations
 
                     b.HasOne("Tripmate.Domain.Entities.Models.Hotel", "Hotel")
                         .WithMany()
-                        .HasForeignKey("HotelId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("HotelId");
 
                     b.HasOne("Tripmate.Domain.Entities.Models.Restaurant", "Restaurant")
                         .WithMany()
-                        .HasForeignKey("RestaurantId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("RestaurantId");
 
                     b.HasOne("Tripmate.Domain.Entities.Models.ApplicationUser", "User")
                         .WithMany("Reviews")

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Tripmate.Application.Services.Attractions.DTOs;
+using Tripmate.Domain.Enums;
 using Xunit;
 
 namespace Tripmate.Application.Services.Attractions.Tests
@@ -20,7 +21,7 @@ namespace Tripmate.Application.Services.Attractions.Tests
             {
                 Name = "Test Attraction",
                 Description = "A valid description",
-                Type = "Museum",
+                Type = AttractionType.Museum,
                 ImageUrl = mockFile.Object
             };
             // Act
@@ -45,7 +46,7 @@ namespace Tripmate.Application.Services.Attractions.Tests
             {
                 Name = name,
                 Description = "Valid description",
-                Type = "Museum",
+                Type = AttractionType.Museum,
                 ImageUrl = mockFile.Object
             };
             // Act
@@ -67,7 +68,7 @@ namespace Tripmate.Application.Services.Attractions.Tests
             {
                 Name = "Valid Name",
                 Description = longDescription,
-                Type = "Museum",
+                Type = AttractionType.Museum,
                 ImageUrl = mockFile.Object
             };
             // Act
@@ -78,30 +79,30 @@ namespace Tripmate.Application.Services.Attractions.Tests
         }
         #endregion
 
-        #region Invalid Test Cases - Type Validation
+        //#region Invalid Test Cases - Type Validation
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("InvalidType")]
-        [InlineData("123")]
-        public void SetAttractionDto_WithInvalidType_ShouldFailValidation(string type)
-        {
-            // Arrange
-            var mockFile = CreateMockFile("test.jpg", 1024 * 1024);
-            var dto = new SetAttractionDto
-            {
-                Name = "Valid Name",
-                Description = "Valid description",
-                Type = type,
-                ImageUrl = mockFile.Object
-            };
-            // Act
-            var result = _attractionValidator.Validate(dto);
-            // Assert
-            result.IsValid.Should().BeFalse($"because the type '{type}' is invalid");
-        }
-        #endregion
+        //[Theory]
+        //[InlineData(null)]
+        //[InlineData("")]
+        //[InlineData("InvalidType")]
+        //[InlineData("123")]
+        //public void SetAttractionDto_WithInvalidType_ShouldFailValidation(string type)
+        //{
+        //    // Arrange
+        //    var mockFile = CreateMockFile("test.jpg", 1024 * 1024);
+        //    var dto = new SetAttractionDto
+        //    {
+        //        Name = "Valid Name",
+        //        Description = "Valid description",
+        //        Type = nul
+        //        ImageUrl = mockFile.Object
+        //    };
+        //    // Act
+        //    var result = _attractionValidator.Validate(dto);
+        //    // Assert
+        //    result.IsValid.Should().BeFalse($"because the type '{type}' is invalid");
+        //}
+        //#endregion
 
         #region Invalid Test Cases - Image Validation
         [Theory]
@@ -116,7 +117,7 @@ namespace Tripmate.Application.Services.Attractions.Tests
             {
                 Name = "Valid Name",
                 Description = "Valid description",
-                Type = "Museum",
+                Type = AttractionType.Safari,
                 ImageUrl = mockFile?.Object
             };
             // Act

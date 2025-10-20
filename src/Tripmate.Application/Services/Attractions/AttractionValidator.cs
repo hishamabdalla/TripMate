@@ -20,8 +20,8 @@ namespace Tripmate.Application.Services.Attractions
             RuleFor(attraction => attraction.Type)
                 .Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("Attraction type is required.")
-            .Must(type => Enum.TryParse<AttractionType>(type, true, out var result) && Enum.IsDefined(typeof(AttractionType), result))
-            .WithMessage("Invalid type. Allowed values: " + string.Join(", ", Enum.GetNames(typeof(AttractionType))));
+                .IsInEnum().WithMessage("Invalid attraction type.");
+
 
 
             RuleFor(attraction => attraction.ImageUrl)

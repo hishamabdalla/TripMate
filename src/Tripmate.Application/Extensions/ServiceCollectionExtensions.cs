@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using System.Reflection;
+using Tripmate.Application.Reviews;
 using Tripmate.Application.Services.Abstractions.Attraction;
 using Tripmate.Application.Services.Abstractions.Country;
 using Tripmate.Application.Services.Abstractions.Hotel;
@@ -31,6 +32,7 @@ using Tripmate.Application.Services.Regions;
 using Tripmate.Application.Services.Restaurants;
 using Tripmate.Domain.AppSettings;
 using Tripmate.Domain.Common.Response;
+using Tripmate.Domain.Common.User;
 using Tripmate.Domain.Services.Interfaces.Identity;
 
 
@@ -80,6 +82,8 @@ namespace Tripmate.Application.Extension
             services.AddScoped<IRestaurantService, RestaurantServices>();
             services.AddScoped<ICacheService, CacheService>();
             services.AddScoped<IHotelServices, HotelServices>();
+            services.AddScoped<IUserContext, UserContext>();
+            services.AddScoped<IReviewService,ReviewService>();
 
 
             services.AddHttpContextAccessor(); // Required for IHttpContextAccessor injection
