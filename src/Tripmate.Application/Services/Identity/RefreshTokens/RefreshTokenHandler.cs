@@ -65,7 +65,14 @@ namespace Tripmate.Application.Services.Identity.RefreshTokens
 
             var newRefreshToken = _tokenService.GenerateRefreshToken();
             user.RefreshTokens.Add(newRefreshToken);
-            await _userManager.UpdateAsync(user);
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+            {
+                _logger.LogError("Failed to update user refresh tokens: {Errors}",
+                    string.Join(", ", updateResult.Errors.Select(e => e.Description)));
+                return new ApiResponse<TokenResponse>(false, 500, "Failed to update refresh token");
+            }
+
             _logger.LogInformation("User's refresh tokens updated successfully");
 
 
