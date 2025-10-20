@@ -26,7 +26,7 @@ namespace Tripmate.Domain.Common.User
             }
 
             var id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-            var name = user.FindFirst(ClaimTypes.Name)?.Value ?? string.Empty;
+             var name = user.FindFirst(ClaimTypes.Name)?.Value ?? string.Empty;
             var email = user.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty;
             var role = user.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
 
