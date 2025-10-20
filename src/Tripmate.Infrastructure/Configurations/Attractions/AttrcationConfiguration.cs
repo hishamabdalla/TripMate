@@ -11,7 +11,7 @@ namespace Tripmate.Infrastructure.Configurations.Attractions
         public void Configure(EntityTypeBuilder<Attraction> builder)
         {
             builder.Property(A => A.Type)
-                .HasConversion(new EnumToStringConverter<AttractionType>());
+                .HasConversion(new EnumToStringConverter<AttractionType>()); // Store enum as string
 
             builder.HasOne(a=>a.Region)
                 .WithMany(r=>r.Attractions)

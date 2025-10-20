@@ -344,9 +344,6 @@ namespace Tripmate.Infrastructure.Migrations
                     b.Property<int>("RegionId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Stars")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("RegionId");
@@ -420,9 +417,6 @@ namespace Tripmate.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
                     b.Property<int>("RegionId")
                         .HasColumnType("int");
 
@@ -441,7 +435,7 @@ namespace Tripmate.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AttractionId")
+                    b.Property<int?>("AttractionId")
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
@@ -451,10 +445,16 @@ namespace Tripmate.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("HotelId")
+                        .HasColumnType("int");
+
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RestaurantId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ReviewDate")
@@ -467,6 +467,10 @@ namespace Tripmate.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AttractionId");
+
+                    b.HasIndex("HotelId");
+
+                    b.HasIndex("RestaurantId");
 
                     b.HasIndex("UserId");
 
@@ -610,8 +614,15 @@ namespace Tripmate.Infrastructure.Migrations
                     b.HasOne("Tripmate.Domain.Entities.Models.Attraction", "Attraction")
                         .WithMany("Reviews")
                         .HasForeignKey("AttractionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Tripmate.Domain.Entities.Models.Hotel", "Hotel")
+                        .WithMany()
+                        .HasForeignKey("HotelId");
+
+                    b.HasOne("Tripmate.Domain.Entities.Models.Restaurant", "Restaurant")
+                        .WithMany()
+                        .HasForeignKey("RestaurantId");
 
                     b.HasOne("Tripmate.Domain.Entities.Models.ApplicationUser", "User")
                         .WithMany("Reviews")
@@ -620,6 +631,10 @@ namespace Tripmate.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Attraction");
+
+                    b.Navigation("Hotel");
+
+                    b.Navigation("Restaurant");
 
                     b.Navigation("User");
                 });
