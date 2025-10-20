@@ -82,7 +82,6 @@ namespace Tripmate.ApplicationTests.Services.Hotels
             {
                 Id=1,
                 Name="masa",
-                Stars=4,
                 PricePerNight="1400",
                 RegionId=2,
                 ImageUrl = "path/to/image.jpg"

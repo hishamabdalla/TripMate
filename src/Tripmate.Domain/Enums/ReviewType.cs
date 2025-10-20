@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Tripmate.Domain.Enums
 {
-    public class ReviewType
+    public enum ReviewType
     {
+        Attraction = 1,
+        Restaurant = 2,
+        Hotel = 3
     }
 }

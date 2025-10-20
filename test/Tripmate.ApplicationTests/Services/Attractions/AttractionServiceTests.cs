@@ -183,7 +183,7 @@ namespace Tripmate.Application.Services.Attractions.Tests
             {
                 Name = "New Attraction",
                 Description = "A new attraction",
-                Type = "Museum",
+                Type = AttractionType.Museum,
                 ImageUrl = moqFile.Object, // Assuming no image for simplicity
                 RegionId = region.Id
             };
@@ -200,7 +200,7 @@ namespace Tripmate.Application.Services.Attractions.Tests
                 Id = 1,
                 Name = setAttractionDto.Name,
                 Description = setAttractionDto.Description,
-                Type = setAttractionDto.Type,
+                Type = setAttractionDto.Type.ToString(),
                 ImageUrl = "http://example.com/image.jpg"
             };
             _mockMapper.Setup(m => m.Map<Attraction>(It.IsAny<SetAttractionDto>()))
@@ -248,7 +248,7 @@ namespace Tripmate.Application.Services.Attractions.Tests
             {
                 Name = "New Attraction",
                 Description = "A new attraction",
-                Type = "Museum",
+                Type = AttractionType.Safari,
                 ImageUrl = null, // Null image
                 RegionId = 1
             };
@@ -269,7 +269,7 @@ namespace Tripmate.Application.Services.Attractions.Tests
             {
                 Name = "New Attraction",
                 Description = "A new attraction",
-                Type = "Museum",
+                Type = AttractionType.Museum ,   
                 ImageUrl = moqFile.Object,
                 RegionId = 999 // Non-existent region
             };
@@ -306,7 +306,7 @@ namespace Tripmate.Application.Services.Attractions.Tests
             {
                 Name = "Updated Attraction",
                 Description = "An updated attraction",
-                Type = "Museum",
+                Type = AttractionType.Museum,
                 ImageUrl = moqFile.Object,
                 RegionId = region.Id
             };
@@ -324,7 +324,7 @@ namespace Tripmate.Application.Services.Attractions.Tests
                 Id = attractionId,
                 Name = setAttractionDto.Name,
                 Description = setAttractionDto.Description,
-                Type = setAttractionDto.Type,
+                Type = setAttractionDto.Type.ToString(),
                 ImageUrl = "http://example.com/updated_image.jpg"
             };
             _mockUnitOfWork.Setup(u => u.Repository<Attraction, int>().GetByIdAsync(attractionId))
@@ -357,7 +357,7 @@ namespace Tripmate.Application.Services.Attractions.Tests
             {
                 Name = "Updated Attraction",
                 Description = "An updated attraction",
-                Type = "Museum",
+                Type = AttractionType.Museum,
                 ImageUrl = null,
                 RegionId = 1
             };
@@ -403,7 +403,7 @@ namespace Tripmate.Application.Services.Attractions.Tests
             {
                 Name = "Updated Attraction",
                 Description = "An updated attraction",
-                Type = "Museum",
+                Type = AttractionType.Museum,
                 ImageUrl = null,
                 RegionId = 999 // Non-existent region
             };
