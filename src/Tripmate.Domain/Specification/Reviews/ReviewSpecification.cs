@@ -15,9 +15,11 @@ namespace Tripmate.Domain.Specification.Reviews
         public ReviewSpecification(ReviewParameters parameters)
             : base(BuildPredicate(parameters))
         {
+
+            AddOrderByDescending(x => x.CreatedAt);
+
             ApplyIncludes(parameters);
             ApplyPaging(parameters.PageNumber, parameters.PageSize);
-            AddOrderByDescending(x => x.CreatedAt);
 
         }
 
