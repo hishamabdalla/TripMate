@@ -154,9 +154,13 @@ jobs:
         set net:max-retries 5
         set net:reconnect-interval-base 10
         set ftp:sync-mode off
+        set file:charset utf-8
+        set ftp:charset utf-8
+        set ftp:use-mdtm off
+        set mirror:set-permissions false
         cd /wwwroot/
         lcd ${{ env.PUBLISH_PATH }}
-        mirror --reverse --delete --verbose --parallel=3 --use-cache
+        mirror --reverse --delete --verbose --parallel=3 --use-cache --no-perms --no-umask
         bye
         EOF
         
