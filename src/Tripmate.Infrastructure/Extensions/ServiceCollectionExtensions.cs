@@ -100,6 +100,20 @@ namespace Tripmate.Infrastructure.Extensions
                         var response = new ApiResponse<string>(false, StatusCodes.Status401Unauthorized, "Unauthorized! Please log in.", null);
 
                         await context.Response.WriteAsJsonAsync(response);
+                    },
+                    OnForbidden = async context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        context.Response.ContentType = "application/json";
+
+                        var response = new ApiResponse<string>(
+                            false,
+                            StatusCodes.Status403Forbidden,
+                            "Access denied! You don’t have permission to perform this action.",
+                            null
+                        );
+
+                        await context.Response.WriteAsJsonAsync(response);
                     }
                 };
                  options.TokenValidationParameters = new TokenValidationParameters
