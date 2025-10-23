@@ -1,0 +1,64 @@
+name: Pull Request Check
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  BUILD_CONFIGURATION: 'Release'
+
+jobs:
+  code-quality:
+    name: Code Quality Check
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: Restore dependencies
+      run: dotnet restore Tripmate.sln
+      
+    - name: Build solution
+      run: dotnet build Tripmate.sln --configuration ${{ env.BUILD_CONFIGURATION }} --no-restore
+      
+    - name: Run tests with coverage
+      run: dotnet test Tripmate.sln --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+      
+    - name: Generate coverage report
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.3.11
+      with:
+        reports: 'coverage/**/coverage.cobertura.xml'
+        targetdir: 'coveragereport'
+        reporttypes: 'HtmlInline;Cobertura;MarkdownSummaryGithub'
+        
+    - name: Add coverage to PR
+      if: github.event_name == 'pull_request'
+      run: |
+        if (Test-Path "coveragereport/SummaryGithub.md") {
+          Get-Content "coveragereport/SummaryGithub.md" >> $env:GITHUB_STEP_SUMMARY
+        }
+        
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: coveragereport/
+        
+    - name: PR Summary
+      run: |
+        echo "### Pull Request Build Summary :white_check_mark:" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Build Status:** Success" >> $GITHUB_STEP_SUMMARY
+        echo "- **Tests:** Passed" >> $GITHUB_STEP_SUMMARY
+        echo "- **Configuration:** ${{ env.BUILD_CONFIGURATION }}" >> $GITHUB_STEP_SUMMARY
