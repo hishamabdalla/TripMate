@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 /src/Tripmate.ApplicationTests/CovArtifacts
 /test/Tripmate.ApplicationTests/CovArtifacts
+
+# Production settings (keep sensitive data out of git)
+**/appsettings.Production.json

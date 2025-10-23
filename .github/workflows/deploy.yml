@@ -66,8 +66,49 @@ jobs:
     - name: Publish API
       run: dotnet publish src/Tripmate.API/Tripmate.API.csproj --configuration ${{ env.BUILD_CONFIGURATION }} --output ${{ env.PUBLISH_PATH }} --no-restore
       
+    - name: Copy web.config to publish folder
+      run: |
+        if [ -f "src/Tripmate.API/web.config" ]; then
+          cp src/Tripmate.API/web.config ${{ env.PUBLISH_PATH }}/web.config
+          echo "✅ web.config copied successfully"
+        else
+          echo "⚠️ web.config not found - creating default one"
+          cat > ${{ env.PUBLISH_PATH }}/web.config << 'EOF'
+        <?xml version="1.0" encoding="utf-8"?>
+        <configuration>
+          <location path="." inheritInChildApplications="false">
+            <system.webServer>
+              <handlers>
+                <add name="aspNetCore" path="*" verb="*" modules="AspNetCoreModuleV2" resourceType="Unspecified" />
+              </handlers>
+              <aspNetCore processPath="dotnet"
+                          arguments=".\Tripmate.API.dll"
+                          stdoutLogEnabled="true"
+                          stdoutLogFile=".\Logs\stdout"
+                          hostingModel="inprocess">
+                <environmentVariables>
+                  <environmentVariable name="ASPNETCORE_ENVIRONMENT" value="Production" />
+                </environmentVariables>
+              </aspNetCore>
+              <httpErrors errorMode="Detailed" />
+            </system.webServer>
+          </location>
+        </configuration>
+        EOF
+        fi
+      
+    - name: Create logs directory
+      run: mkdir -p ${{ env.PUBLISH_PATH }}/Logs
+      
     - name: List published files
-      run: ls -la ${{ env.PUBLISH_PATH }}
+      run: |
+        echo "📦 Published files:"
+        ls -la ${{ env.PUBLISH_PATH }}
+        echo ""
+        echo "📄 Checking critical files:"
+        [ -f "${{ env.PUBLISH_PATH }}/Tripmate.API.dll" ] && echo "✅ Tripmate.API.dll found" || echo "❌ Tripmate.API.dll NOT found"
+        [ -f "${{ env.PUBLISH_PATH }}/web.config" ] && echo "✅ web.config found" || echo "❌ web.config NOT found"
+        [ -f "${{ env.PUBLISH_PATH }}/appsettings.json" ] && echo "✅ appsettings.json found" || echo "❌ appsettings.json NOT found"
       
     - name: Upload publish artifacts
       uses: actions/upload-artifact@v4
@@ -104,7 +145,7 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: ${{ env.PUBLISH_PATH }}/
-        server-dir: ./
+        server-dir: /wwwroot/
         port: 21
         protocol: ftp
         log-level: verbose
@@ -123,10 +164,16 @@ jobs:
         echo "### ✅ Deployment Completed Successfully! 🚀" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "- **Environment:** Production (MonsterASP.NET)" >> $GITHUB_STEP_SUMMARY
+        echo "- **Deployment Path:** /wwwroot/" >> $GITHUB_STEP_SUMMARY
         echo "- **Build Configuration:** ${{ env.BUILD_CONFIGURATION }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Time:** $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🌐 Next Steps:" >> $GITHUB_STEP_SUMMARY
+        echo "1. Visit: https://tripmate.runasp.net" >> $GITHUB_STEP_SUMMARY
+        echo "2. Check Swagger: https://tripmate.runasp.net/swagger" >> $GITHUB_STEP_SUMMARY
+        echo "3. If error 500.30, check Logs folder on server" >> $GITHUB_STEP_SUMMARY
         
     - name: Deployment Failed
       if: failure()
