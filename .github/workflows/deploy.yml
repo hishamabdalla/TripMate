@@ -90,6 +90,13 @@ jobs:
         name: published-app
         path: ${{ env.PUBLISH_PATH }}
         
+    - name: List files to deploy
+      run: |
+        echo "Files to be deployed:"
+        ls -lah ${{ env.PUBLISH_PATH }}
+        echo "Total size:"
+        du -sh ${{ env.PUBLISH_PATH }}
+        
     - name: Deploy to MonsterASP.NET via FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
@@ -97,7 +104,7 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: ${{ env.PUBLISH_PATH }}/
-        server-dir: ${{ secrets.FTP_SERVER_DIR }}
+        server-dir: ./
         port: 21
         protocol: ftp
         log-level: verbose
