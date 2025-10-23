@@ -133,12 +133,35 @@ jobs:
         
     - name: List files to deploy
       run: |
-        echo "Files to be deployed:"
+        echo "📦 Files to be deployed:"
         ls -lah ${{ env.PUBLISH_PATH }}
-        echo "Total size:"
+        echo ""
+        echo "📊 Total size:"
         du -sh ${{ env.PUBLISH_PATH }}
+        echo ""
+        echo "🔍 File count:"
+        find ${{ env.PUBLISH_PATH }} -type f | wc -l
         
-    - name: Deploy to MonsterASP.NET via FTP
+    - name: Install lftp for reliable FTP transfer
+      run: sudo apt-get update && sudo apt-get install -y lftp
+        
+    - name: Deploy to MonsterASP.NET via LFTP
+      run: |
+        lftp -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }} <<EOF
+        set ssl:verify-certificate no
+        set ftp:passive-mode on
+        set net:timeout 120
+        set net:max-retries 5
+        set net:reconnect-interval-base 10
+        set ftp:sync-mode off
+        cd /wwwroot/
+        lcd ${{ env.PUBLISH_PATH }}
+        mirror --reverse --delete --verbose --parallel=3 --use-cache
+        bye
+        EOF
+        
+    - name: Deploy to MonsterASP.NET via FTP (Fallback)
+      if: failure()
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
         server: ${{ secrets.FTP_SERVER }}
@@ -150,6 +173,8 @@ jobs:
         protocol: ftp
         log-level: verbose
         dangerous-clean-slate: false
+        timeout: 300000
+        dry-run: false
         exclude: |
           **/.git*
           **/.git*/**
