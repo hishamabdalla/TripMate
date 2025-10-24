@@ -187,19 +187,18 @@ jobs:
         lcd ${{ env.PUBLISH_PATH }}
         cd /wwwroot
         
-        # Upload small files first
+        # Upload configuration files first
         echo "📦 Uploading configuration files..."
-        put -O /wwwroot web.config
-        put -O /wwwroot appsettings.json
-        put -O /wwwroot appsettings.Production.json
+        put -O /wwwroot web.config || echo "web.config not found"
+        put -O /wwwroot appsettings.json || echo "appsettings.json not found"
         
-        # Upload DLLs one by one with retry
+        # Upload DLLs
         echo "📦 Uploading application DLLs..."
         mput -O /wwwroot *.dll
         
-        # Upload remaining files
+        # Upload remaining files (exclude DLLs and config files already uploaded)
         echo "📦 Uploading remaining files..."
-        mirror --reverse --verbose --only-newer --parallel=2 --exclude web.config --exclude appsettings.json --exclude appsettings.Production.json --exclude '*.dll' ./ /wwwroot/
+        mirror --reverse --verbose --only-newer --parallel=2 --exclude-glob '*.dll' --exclude web.config --exclude appsettings.json ./ /wwwroot/
         
         bye
         EOF
