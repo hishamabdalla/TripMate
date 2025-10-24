@@ -72,7 +72,7 @@ jobs:
           cp src/Tripmate.API/web.config ${{ env.PUBLISH_PATH }}/web.config
           echo "✅ web.config copied successfully"
         else
-          echo "⚠️ web.config not found - creating default one"
+          echo "⚠️ Creating default web.config"
           cat > ${{ env.PUBLISH_PATH }}/web.config << 'EOF'
         <?xml version="1.0" encoding="utf-8"?>
         <configuration>
@@ -91,6 +91,11 @@ jobs:
                 </environmentVariables>
               </aspNetCore>
               <httpErrors errorMode="Detailed" />
+              <security>
+                <requestFiltering>
+                  <requestLimits maxAllowedContentLength="524288000" />
+                </requestFiltering>
+              </security>
             </system.webServer>
           </location>
         </configuration>
@@ -103,12 +108,14 @@ jobs:
     - name: List published files
       run: |
         echo "📦 Published files:"
-        ls -la ${{ env.PUBLISH_PATH }}
+        ls -lah ${{ env.PUBLISH_PATH }}
         echo ""
-        echo "📄 Checking critical files:"
-        [ -f "${{ env.PUBLISH_PATH }}/Tripmate.API.dll" ] && echo "✅ Tripmate.API.dll found" || echo "❌ Tripmate.API.dll NOT found"
-        [ -f "${{ env.PUBLISH_PATH }}/web.config" ] && echo "✅ web.config found" || echo "❌ web.config NOT found"
-        [ -f "${{ env.PUBLISH_PATH }}/appsettings.json" ] && echo "✅ appsettings.json found" || echo "❌ appsettings.json NOT found"
+        echo "� Total size:"
+        du -sh ${{ env.PUBLISH_PATH }}
+        echo ""
+        echo "📄 Critical files check:"
+        [ -f "${{ env.PUBLISH_PATH }}/Tripmate.API.dll" ] && echo "✅ Tripmate.API.dll" || echo "❌ Tripmate.API.dll MISSING"
+        [ -f "${{ env.PUBLISH_PATH }}/web.config" ] && echo "✅ web.config" || echo "❌ web.config MISSING"
       
     - name: Upload publish artifacts
       uses: actions/upload-artifact@v4
@@ -133,35 +140,85 @@ jobs:
         
     - name: List files to deploy
       run: |
-        echo "📦 Files to be deployed:"
+        echo "📦 Files to deploy:"
         ls -lah ${{ env.PUBLISH_PATH }}
         echo ""
-        echo "📊 Total size:"
-        du -sh ${{ env.PUBLISH_PATH }}
-        echo ""
-        echo "🔍 File count:"
-        find ${{ env.PUBLISH_PATH }} -type f | wc -l
+        echo "📊 Total size: $(du -sh ${{ env.PUBLISH_PATH }} | cut -f1)"
         
-    - name: Install lftp for reliable FTP transfer
-      run: sudo apt-get update && sudo apt-get install -y lftp
+    - name: Install lftp
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y lftp
+        lftp --version
+        
+    - name: Clean old deployment on server
+      run: |
+        echo "🧹 Cleaning old files from /wwwroot/..."
+        lftp -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }} <<EOF
+        set ftp:ssl-allow no
+        set ftp:passive-mode on
+        set net:timeout 180
+        set net:max-retries 3
+        set net:reconnect-interval-base 5
+        cd /wwwroot
+        rm -rf *
+        bye
+        EOF
+        echo "✅ Old files cleaned"
+      continue-on-error: true
         
     - name: Deploy to MonsterASP.NET via LFTP
       run: |
+        echo "📤 Starting deployment to /wwwroot/..."
         lftp -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }} <<EOF
-        set ssl:verify-certificate no
+        set ftp:ssl-allow no
         set ftp:passive-mode on
-        set net:timeout 120
-        set net:max-retries 5
+        set net:timeout 300
+        set net:max-retries 10
         set net:reconnect-interval-base 10
-        set ftp:sync-mode off
+        set net:reconnect-interval-multiplier 1
+        set mirror:set-permissions false
+        set ftp:use-mdtm off
+        set ftp:use-size off
         set file:charset utf-8
         set ftp:charset utf-8
-        set ftp:use-mdtm off
-        set mirror:set-permissions false
-        cd /wwwroot/
+        set xfer:clobber on
+        
         lcd ${{ env.PUBLISH_PATH }}
-        mirror --reverse --delete --verbose --parallel=3 --use-cache --no-perms --no-umask
+        cd /wwwroot
+        
+        # Upload small files first
+        echo "📦 Uploading configuration files..."
+        put -O /wwwroot web.config
+        put -O /wwwroot appsettings.json
+        put -O /wwwroot appsettings.Production.json
+        
+        # Upload DLLs one by one with retry
+        echo "📦 Uploading application DLLs..."
+        mput -O /wwwroot *.dll
+        
+        # Upload remaining files
+        echo "📦 Uploading remaining files..."
+        mirror --reverse --verbose --only-newer --parallel=2 --exclude web.config --exclude appsettings.json --exclude appsettings.Production.json --exclude '*.dll' ./ /wwwroot/
+        
         bye
+        EOF
+        
+        if [ $? -eq 0 ]; then
+          echo "✅ Deployment completed successfully"
+        else
+          echo "❌ Deployment failed"
+          exit 1
+        fi
+        
+    - name: Verify deployment
+      run: |
+        echo "🔍 Verifying deployed files..."
+        lftp -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }} <<EOF
+        set ftp:ssl-allow no
+        cd /wwwroot
+        ls -la
+        quit
         EOF
         
     - name: Deploy to MonsterASP.NET via FTP (Fallback)
@@ -193,20 +250,24 @@ jobs:
         echo "### ✅ Deployment Completed Successfully! 🚀" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "- **Environment:** Production (MonsterASP.NET)" >> $GITHUB_STEP_SUMMARY
-        echo "- **Deployment Path:** /wwwroot/" >> $GITHUB_STEP_SUMMARY
-        echo "- **Build Configuration:** ${{ env.BUILD_CONFIGURATION }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Path:** /wwwroot/" >> $GITHUB_STEP_SUMMARY
+        echo "- **Build:** ${{ env.BUILD_CONFIGURATION }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Time:** $(date)" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### 🌐 Next Steps:" >> $GITHUB_STEP_SUMMARY
-        echo "1. Visit: https://tripmate.runasp.net" >> $GITHUB_STEP_SUMMARY
-        echo "2. Check Swagger: https://tripmate.runasp.net/swagger" >> $GITHUB_STEP_SUMMARY
-        echo "3. If error 500.30, check Logs folder on server" >> $GITHUB_STEP_SUMMARY
+        echo "1. Wait 2-3 minutes for IIS to restart" >> $GITHUB_STEP_SUMMARY
+        echo "2. Visit: https://tripmate.runasp.net" >> $GITHUB_STEP_SUMMARY
+        echo "3. Check Swagger: https://tripmate.runasp.net/swagger" >> $GITHUB_STEP_SUMMARY
+        echo "4. If error 500.30: Check if .NET 9.0 Runtime is installed" >> $GITHUB_STEP_SUMMARY
         
     - name: Deployment Failed
       if: failure()
       run: |
         echo "### ❌ Deployment Failed!" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "Please check the logs above to identify the issue" >> $GITHUB_STEP_SUMMARY
+        echo "**Common Issues:**" >> $GITHUB_STEP_SUMMARY
+        echo "- FTP timeout: Try again or contact MonsterASP support" >> $GITHUB_STEP_SUMMARY
+        echo "- File size limits: Check MonsterASP.NET file upload limits" >> $GITHUB_STEP_SUMMARY
+        echo "- Permissions: Verify FTP user has write access to /wwwroot/" >> $GITHUB_STEP_SUMMARY
